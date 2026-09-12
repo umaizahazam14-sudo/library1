@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bookmark — My Library</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,500&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#FAF5EB;--surface:#24150F;--surface2:#342018;
+  --cardbg:#FFF9F0;--border:#D8C7B5;--border-dark:#5A3826;
+  --accent:#B8894D;--accent2:#8C5A2B;--gold:#C99B57;
+  --accentglow:rgba(184,137,77,0.12);--red:#A84848;--blue:#4A75A8;
+  --green:#3B7A54;--purple:#7A4AA8;--text:#2B1A12;--text-light:#FAF5EB;
+  --text2:#6F5A4B;--text3:#8C7667;--cream:#F3EBDD;--warmivory:#FAF5EB;
+  --darktext:#2B1A12;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border-dark);border-radius:99px}
+
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:252px;background:var(--surface);border-right:1px solid #3E2419;display:flex;flex-direction:column;z-index:50;transition:transform .3s;color:var(--text-light)}
+.logo{display:flex;align-items:center;gap:10px;padding:24px 20px 18px;font-family:'Playfair Display',serif;font-size:1.45rem;font-weight:700;color:var(--gold);border-bottom:1px solid #3E2419;text-decoration:none}
+.logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--gold),var(--accent));border-radius:99px;display:flex;align-items:center;justify-content:center;font-size:1rem;color:#1E120D;flex-shrink:0}
+.nav-sec{padding:14px 16px 6px;font-size:.62rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#8C7667}
+.nav-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:99px;margin:1px 6px;cursor:pointer;color:#D2C2B2;font-size:.84rem;font-weight:500;transition:all .18s;text-decoration:none}
+.nav-item:hover{color:var(--text-light);background:rgba(201,155,87,0.1)}
+.nav-item.active{color:var(--gold);background:rgba(201,155,87,0.18);border:1px solid rgba(201,155,87,0.3)}
+.nav-item svg{width:17px;height:17px;flex-shrink:0}
+.nbadge{margin-left:auto;background:var(--gold);color:#1E120D;font-size:.62rem;font-weight:700;padding:2px 7px;border-radius:99px}
+.nbadge.blue{background:var(--blue);color:#FAF5EB}
+.sdiv{height:1px;background:#3E2419;margin:8px 18px}
+.fpill{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;margin:1px 6px;cursor:pointer;font-size:.82rem;color:#D2C2B2;transition:all .18s}
+.fpill:hover{color:var(--text-light);background:rgba(201,155,87,0.08)}
+.fpill.active{color:var(--text-light);background:rgba(201,155,87,0.15);border:1px solid rgba(201,155,87,0.2)}
+.fdot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.sb-bottom{margin-top:auto;padding:14px;border-top:1px solid #3E2419}
+.user-card{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:99px;cursor:pointer;transition:background .2s}
+.user-card:hover{background:rgba(201,155,87,0.1)}
+.avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--accent));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem;color:#1E120D;flex-shrink:0}
+
+.main{margin-left:252px;min-height:100vh;display:flex;flex-direction:column;background:var(--bg)}
+.topbar{position:sticky;top:0;z-index:40;background:rgba(250,245,235,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;gap:14px}
+.topbar-title{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--text)}
+.topbar-right{display:flex;align-items:center;gap:10px;margin-left:auto;flex-wrap:wrap}
+.sw{position:relative}
+.sw svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--text2);pointer-events:none}
+.search{background:var(--cream);border:1px solid var(--border);border-radius:99px;padding:8px 13px 8px 35px;color:var(--text);font-family:'Inter',sans-serif;font-size:.82rem;width:220px;transition:border .2s}
+.search:focus{outline:none;border-color:var(--accent2)}
+.search::placeholder{color:var(--text2)}
+.view-toggle{display:flex;background:var(--cream);border:1px solid var(--border);border-radius:9px;overflow:hidden}
+.vbtn{padding:7px 14px;font-size:.75rem;font-weight:500;cursor:pointer;color:var(--text2);background:none;border:none;font-family:'Inter',sans-serif;transition:all .2s;display:flex;align-items:center;gap:5px}
+.vbtn svg{width:13px;height:13px}
+.vbtn.active{background:var(--surface2);color:var(--text-light);font-weight:600}
+.vbtn:hover:not(.active){color:var(--text);background:rgba(184,137,77,0.1)}
+.ssort{background:var(--cream);border:1px solid var(--border);border-radius:9px;padding:7px 11px;color:var(--text);font-family:'Inter',sans-serif;font-size:.75rem;cursor:pointer}
+.ssort:focus{outline:none;border-color:var(--accent2)}
+.hamburger{display:none;background:none;border:none;color:var(--text);cursor:pointer;padding:6px}
+
+.content{padding:24px 28px;flex:1;overflow-y:auto;max-width:1600px;width:100%;background:var(--bg)}
+
+/* STATISTICS CARDS - CREAM WHITE SURFACES */
+.stats-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:24px}
+.stat-card{background:var(--cardbg);border:1px solid var(--border);border-radius:14px;padding:14px 16px;box-shadow:0 4px 15px rgba(52,32,24,0.08);transition:all .2s;display:flex;flex-direction:column;justify-content:center}
+.stat-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 24px rgba(52,32,24,0.12)}
+.stat-num{font-family:'Playfair Display',serif;font-size:1.85rem;font-weight:700;color:var(--darktext);line-height:1;display:flex;align-items:center;justify-content:space-between}
+.stat-icon{font-size:1.2rem;opacity:.95;margin-left:4px}
+.stat-label{font-size:.72rem;color:var(--text2);margin-top:6px;font-weight:600;letter-spacing:.02em}
+
+/* COVERS GRID */
+.bk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:18px}
+.bk-card{display:flex;flex-direction:column;gap:8px;cursor:pointer;animation:fadeUp .35s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.bk-cover{position:relative;width:100%;aspect-ratio:2/3;border-radius:4px 10px 10px 4px;overflow:hidden;box-shadow:-3px 5px 18px rgba(52,32,24,.25),inset -5px 0 12px rgba(0,0,0,.2);transition:all .3s;border:1px solid var(--border)}
+.bk-cover:hover{transform:translateY(-9px) scale(1.03);box-shadow:-7px 18px 30px rgba(52,32,24,.35),0 0 12px rgba(184,137,77,0.3);border-color:var(--accent)}
+.bk-cover img{width:100%;height:100%;object-fit:cover;display:block}
+.bk-fb{width:100%;height:100%;position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;padding:14px;text-align:center}
+.bk-fb .fbt{font-family:'Playfair Display',serif;font-size:.78rem;font-weight:700;color:#fff;line-height:1.3;margin-bottom:5px}
+.bk-fb .fba{font-size:.62rem;color:rgba(255,255,255,.6)}
+.sbadge{position:absolute;top:7px;right:7px;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.58rem;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.b-read{background:var(--green);color:#fff}
+.b-reading{background:var(--blue);color:#fff}
+.b-tbr{background:var(--accent);color:#1E120D}
+.bk-title{font-family:'Playfair Display',serif;font-size:.84rem;font-weight:600;line-height:1.25;color:var(--text);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.bk-auth{font-size:.7rem;color:var(--text2);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bk-stars{color:var(--gold);font-size:.65rem;margin-top:2px}
+
+/* SPINES */
+.sp-list{display:flex;flex-direction:column;gap:4px}
+.sp-row{display:flex;align-items:center;gap:14px;padding:11px 14px;border-radius:10px;cursor:pointer;transition:all .15s;animation:fadeUp .28s ease both;background:var(--cardbg);border:1px solid var(--border)}
+.sp-row:hover{background:var(--cream);border-color:var(--accent)}
+.sp-bar{width:7px;height:44px;border-radius:3px;flex-shrink:0}
+.sp-thumb{width:34px;height:51px;border-radius:3px;object-fit:cover;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.2);image-rendering:-webkit-optimize-contrast}
+.sp-meta{flex:1;min-width:0}
+.sp-title{font-family:'Playfair Display',serif;font-size:.97rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sp-auth{font-size:.74rem;color:var(--text2);margin-top:1px}
+.sp-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.sp-pgs{font-size:.7rem;color:var(--text3);text-align:right;min-width:60px}
+.stag{padding:3px 9px;border-radius:99px;font-size:.66rem;font-weight:600;white-space:nowrap}
+.t-read{background:rgba(59,122,84,.15);color:var(--green)}
+.t-reading{background:rgba(74,117,168,.15);color:var(--blue)}
+.t-tbr{background:rgba(184,137,77,.18);color:var(--accent2)}
+
+/* SHELF */
+.shelves-wrap{display:flex;flex-direction:column;gap:0;background:#160C08;border-radius:16px;overflow:hidden;border:1px solid var(--border-dark);box-shadow:0 20px 60px rgba(0,0,0,.4);transform:translateZ(0)}
+.shelf-wall-row{display:flex;align-items:flex-end;background:linear-gradient(180deg,#1E120D 0%,#150C07 100%);padding:24px 32px 0;position:relative;margin-bottom:2px}
+.shelf-wall-row::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 20px,rgba(0,0,0,.05) 20px,rgba(0,0,0,.05) 21px),repeating-linear-gradient(90deg,transparent,transparent 20px,rgba(0,0,0,.04) 20px,rgba(0,0,0,.04) 21px);pointer-events:none}
+.shelf-label-side{writing-mode:vertical-rl;transform:rotate(180deg);font-size:.58rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:rgba(201,155,87,.35);margin-right:18px;flex-shrink:0;font-family:'Inter',sans-serif;min-width:14px}
+.shelf-books-row{display:flex;gap:6px;align-items:flex-end;flex:1;overflow:hidden;padding-bottom:0;min-height:180px;justify-content:flex-start}
+.shelf-plank{height:18px;background:linear-gradient(180deg,#5A3826 0%,#342018 30%,#24150F 70%,#160C08 100%);border-top:4px solid #7C5035;border-bottom:3px solid #0D0704;margin:0 32px;box-shadow:inset 0 2px 4px rgba(255,255,255,.12),inset 0 -2px 4px rgba(0,0,0,.7),0 8px 20px rgba(0,0,0,.85);position:relative}
+.shelf-plank::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 50px,rgba(0,0,0,.08) 50px,rgba(0,0,0,.08) 52px);pointer-events:none}
+.e-book{flex-shrink:0;border-radius:2px 3px 0 0;cursor:pointer;transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .2s;position:relative;overflow:hidden;box-shadow:inset -2px 0 5px rgba(0,0,0,.4),2px 2px 6px rgba(0,0,0,.3),inset 1px 0 1px rgba(255,255,255,.08);will-change:transform}
+.e-book:hover{transform:translateY(-26px);z-index:20;box-shadow:inset -2px 0 5px rgba(0,0,0,.4),-3px 8px 20px rgba(0,0,0,.7),0 0 12px rgba(184,137,77,0.3)}
+.e-book img{width:100%;height:100%;object-fit:cover;display:block;image-rendering:auto}
+.e-book-fb{width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:4px;background:#24150F}
+.e-book-txt{writing-mode:vertical-rl;transform:rotate(180deg);font-size:.55rem;color:rgba(250,245,235,.9);font-family:'Playfair Display',serif;font-weight:700;text-overflow:ellipsis;overflow:hidden;max-height:95%;letter-spacing:.06em;white-space:nowrap}
+.bookend{width:16px;flex-shrink:0;align-self:flex-start;display:flex;align-items:flex-end;height:180px}
+.bookend-shape{width:16px;height:85%;background:linear-gradient(180deg,#5A3826 0%,#342018 50%,#1E120D 100%);border-radius:3px 3px 0 0;box-shadow:inset -2px 0 4px rgba(0,0,0,.6),inset 1px 1px 2px rgba(255,255,255,.1)}
+.shelf-deco{flex-shrink:0;display:flex;align-items:flex-end;height:180px;padding-bottom:12px;font-size:1.4rem;line-height:1;margin:0 4px}
+
+/* MODAL - FIXED RECTANGULAR BOOK COVER DISPLAY */
+.modal-bg{position:fixed;inset:0;background:rgba(18,10,6,.82);z-index:200;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .3s}
+.modal-bg.open{opacity:1;pointer-events:all}
+.modal{background:var(--warmivory);border:1px solid var(--border);border-radius:20px;max-width:520px;width:92%;overflow:hidden;transform:scale(.92) translateY(18px);transition:transform .3s;position:relative;box-shadow:0 25px 80px rgba(36,21,15,0.45);color:var(--darktext)}
+.modal-bg.open .modal{transform:scale(1) translateY(0)}
+.modal-hero{height:170px;position:relative;overflow:hidden;background:#342018}
+.modal-hero img{width:100%;height:100%;object-fit:cover;filter:blur(22px) brightness(.4)}
+.modal-hero-grad{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 20%,var(--warmivory))}
+.modal-cover{position:absolute;bottom:-22px;left:26px;width:88px;aspect-ratio:2/3;border-radius:6px;overflow:hidden;box-shadow:-4px 8px 24px rgba(36,21,15,0.4);border:2px solid var(--warmivory);background:#342018;display:flex;align-items:center;justify-content:center}
+.modal-cover img{width:100%;height:100%;object-fit:cover;object-position:center;position:relative;z-index:2;background:#342018;display:block}
+.modal-cover-fallback{position:absolute;inset:0;display:none;z-index:3;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:8px;background:linear-gradient(150deg,#342018,#24150F,#5A3826);color:#FAF5EB;border-radius:6px}
+.modal-cover-fallback .mcf-title{font:700 11px/1.2 'Playfair Display',serif;color:#C99B57;margin-bottom:4px}
+.modal-cover-fallback .mcf-author{font:8px/1.25 Inter,sans-serif;color:#A89586}
+.modal-body{padding:38px 26px 26px 136px}
+.modal-title{font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:700;line-height:1.2;margin-bottom:3px;color:var(--darktext)}
+.modal-author{font-size:.82rem;color:var(--text2);margin-bottom:12px}
+.modal-tags{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:13px}
+.modal-genre{padding:3px 9px;border-radius:99px;font-size:.7rem;font-weight:600;background:rgba(184,137,77,0.18);color:var(--accent2);border:1px solid rgba(184,137,77,0.25)}
+.modal-stars{color:var(--gold);font-size:.95rem;letter-spacing:3px;margin-bottom:5px}
+.modal-close{position:absolute;top:14px;right:14px;background:var(--cream);border:1px solid var(--border);border-radius:50%;width:30px;height:30px;color:var(--darktext);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;transition:background .2s;z-index:10}
+.modal-close:hover{background:var(--border);color:var(--darktext)}
+.modal-acts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.btn{padding:8px 14px;border-radius:8px;font-size:.8rem;font-weight:600;cursor:pointer;border:none;transition:all .2s;font-family:'Inter',sans-serif}
+.btn-p{background:var(--surface2);color:var(--warmivory);font-weight:600}
+.btn-p:hover{background:#5A3826;color:#FFF9F0}
+.btn-o{background:var(--cream);color:var(--darktext);border:1px solid var(--border)}
+.btn-o:hover{background:#E8DACB;color:var(--darktext);border-color:var(--accent)}
+
+/* CHATBOT */
+.chat-bubble{position:fixed;bottom:24px;right:24px;width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--accent));display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.8rem;box-shadow:0 6px 24px rgba(36,21,15,.3);transition:transform .2s;z-index:180;border:1px solid rgba(250,245,235,0.4)}
+.chat-bubble:hover{transform:scale(1.1);box-shadow:0 8px 30px rgba(184,137,77,.4)}
+.chat-window{position:fixed;bottom:100px;right:24px;width:360px;height:500px;background:var(--warmivory);border:1px solid var(--border);border-radius:14px;display:flex;flex-direction:column;box-shadow:0 15px 50px rgba(36,21,15,.35);z-index:180;opacity:0;pointer-events:none;transform:translateY(20px) scale(.9);transition:all .3s}
+.chat-window.open{opacity:1;pointer-events:all;transform:translateY(0) scale(1)}
+.chat-header{background:linear-gradient(135deg,var(--surface2),var(--surface));color:var(--gold);padding:16px;border-radius:14px 14px 0 0;border-bottom:1px solid var(--border-dark);display:flex;align-items:center;justify-content:space-between;font-weight:600}
+.chat-close{background:rgba(255,255,255,.1);border:none;color:var(--warmivory);cursor:pointer;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;transition:background .2s}
+.chat-close:hover{background:rgba(201,155,87,0.3)}
+.chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.chat-msg{display:flex;gap:8px;align-items:flex-end;animation:fadeUp .3s ease}
+.chat-msg.bot .text{background:var(--cream);border:1px solid var(--border);color:var(--darktext)}
+.chat-msg.user{justify-content:flex-end}
+.chat-msg.user .text{background:var(--surface2);color:var(--warmivory);font-weight:500}
+.chat-msg .text{border-radius:12px;padding:10px 14px;font-size:.82rem;max-width:80%;line-height:1.4;word-wrap:break-word}
+.chat-input-wrap{border-top:1px solid var(--border);padding:12px;display:flex;gap:8px;background:var(--warmivory)}
+.chat-input{flex:1;background:var(--cream);border:1px solid var(--border);border-radius:20px;padding:8px 14px;color:var(--darktext);font-family:'Inter',sans-serif;font-size:.82rem;outline:none;transition:border .2s}
+.chat-input:focus{border-color:var(--accent2)}
+.chat-send{background:var(--surface2);border:none;color:var(--warmivory);border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:600;transition:background .2s}
+.chat-send:hover{background:var(--border-dark)}
+
+.toast{position:fixed;bottom:22px;right:22px;background:var(--surface2);border:1px solid var(--border-dark);border-radius:10px;padding:11px 18px;font-size:.83rem;color:var(--warmivory);box-shadow:0 8px 28px rgba(36,21,15,.4);transform:translateY(80px);opacity:0;transition:all .3s;z-index:300}
+.toast.show{transform:translateY(0);opacity:1}
+
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}.hamburger{display:block}
+  .stats-strip{grid-template-columns:repeat(3,1fr)}
+  .content{padding:16px}.topbar{padding:11px 14px}
+  .bk-grid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:12px}
+  .chat-window{width:calc(100vw - 28px);max-width:360px;bottom:82px;right:50%;transform:translateX(50%)}
+  .chat-window.open{transform:translateX(50%) scale(1)}
+  .chat-bubble{right:14px;bottom:14px}
+}
+.sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:45}
+@media(max-width:900px){.sidebar-backdrop.open{display:block}}
+
+/* ===== Stable feature additions ===== */
+.nav-item#nav-library,.nav-item#nav-favorites,.nav-item#nav-wishlist{cursor:pointer}
+.modal-acts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.modal-acts .feature-read,.modal-acts .feature-summary,.modal-acts .feature-assistant{grid-column:1/-1}
+.modal-acts .feature-read{margin-top:4px}
+.feature-modal-bg{position:fixed;inset:0;background:rgba(18,10,6,.82);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:18px;z-index:1000}
+.feature-modal-bg.open{display:flex}
+.feature-modal{position:relative;width:min(900px,100%);max-height:min(88vh,780px);overflow:auto;background:var(--cream);color:var(--darktext);border:1px solid var(--border-dark);border-radius:24px;box-shadow:0 24px 70px rgba(36,21,15,.5);padding:26px}
+.feature-close{position:absolute;right:18px;top:12px;border:0;background:transparent;color:#6F5A4B;font-size:32px;line-height:1;cursor:pointer}
+.feature-close:hover{color:#2B1A12}
+.feature-heading{display:flex;gap:10px;align-items:flex-start;padding-right:42px}.feature-heading span{font-size:22px}.feature-heading h2{font-family:'Playfair Display',serif;font-size:26px;line-height:1.15;color:#5A3826}
+.summary-layout{display:grid;grid-template-columns:210px 1fr;gap:18px;margin-top:22px}.summary-tabs{display:flex;flex-direction:column;gap:8px}.summary-tab{border:1px solid #C4B29E;background:#E2D5C3;color:#2B1A12;padding:12px 13px;border-radius:10px;text-align:left;font:500 14px Inter,sans-serif;cursor:pointer}.summary-tab.active{background:#342018;color:#FAF5EB;border-color:#342018}.summary-panel{min-width:0}.summary-progress{height:5px;background:#E0D0BD;border-radius:99px;overflow:hidden;margin-bottom:16px}.summary-progress span{display:block;height:100%;width:20%;background:#B8894D;transition:width .2s ease}.summary-panel h3{font-family:'Playfair Display',serif;font-size:22px;margin-bottom:10px;color:#342018}.summary-panel p,.summary-panel li{font:16px/1.75 Inter,sans-serif;color:#3A2A20}.summary-panel ul{padding-left:20px}.assistant-card{width:min(650px,100%);display:flex;flex-direction:column}.assistant-context{margin-top:12px;padding:10px 12px;background:#E2D5C3;border-radius:10px;font-size:13px;color:#3A2A20}.assistant-messages{height:340px;overflow:auto;margin:14px 0;padding:8px;display:flex;flex-direction:column;gap:9px}.assistant-msg{max-width:85%;padding:10px 12px;border-radius:14px;line-height:1.5;font-size:14px}.assistant-msg.bot{background:#E2D5C3;color:#2B1A12;align-self:flex-start}.assistant-msg.user{background:#342018;color:#FAF5EB;align-self:flex-end}.assistant-input-row{display:flex;gap:8px}.assistant-input-row input{flex:1;min-width:0;padding:12px;border:1px solid #C4B29E;border-radius:10px;font:14px Inter,sans-serif;background:#FAF5EB;color:#2B1A12}.assistant-input-row button{border:0;border-radius:10px;background:#342018;color:#FAF5EB;padding:0 18px;cursor:pointer}.reader{position:fixed;inset:0;z-index:1100;display:none;flex-direction:column;overflow:hidden;background:#F3EBDD;color:#2B1A12}.reader.open{display:flex}.reader.parchment{background:#F3EBDD;color:#2B1A12}.reader.sepia{background:#E2D5C3;color:#24150F}.reader.night{background:#1E120D;color:#FAF5EB}.reader-topbar{display:flex;align-items:center;gap:20px;min-height:82px;padding:12px 22px;border-bottom:1px solid rgba(90,56,38,.25);background:inherit;flex-wrap:wrap}.reader-return{border:0;background:transparent;color:inherit;font-weight:600;cursor:pointer;font-size:15px}.reader-bookhead{flex:1;min-width:180px}.reader-title{font:700 25px/1.1 'Playfair Display',serif}.reader-author{font:14px Inter,sans-serif;opacity:.7;margin-top:3px}.reader-controls{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.reader-themes{display:flex;gap:5px;margin-right:6px}.reader-theme,.font-btn{border:1px solid rgba(90,56,38,.3);background:rgba(255,255,255,.3);color:inherit;border-radius:8px;padding:8px 10px;cursor:pointer}.reader-theme.active{background:#342018;color:#FAF5EB}.font-btn{font-size:19px;min-width:34px}.reader-main{flex:1;overflow:auto;padding:28px 16px 50px}.reader-paper{max-width:780px;margin:0 auto;min-height:100%;padding:22px 12px 60px}.reader-demo-label{text-align:center;font:12px Inter,sans-serif;opacity:.6;margin-bottom:26px}.reader-kicker{text-transform:uppercase;letter-spacing:.14em;font:600 12px Inter,sans-serif;opacity:.7}.reader-paper h1{font:700 40px/1.1 'Playfair Display',serif;margin:8px 0 14px}.reader-rule{height:1px;background:currentColor;opacity:.18;margin-bottom:24px}.reader-text{font:18px/1.85 Georgia,'Times New Roman',serif}.reader-text p{margin:0 0 1.1em}.reader-footer{display:flex;align-items:center;justify-content:center;gap:14px;min-height:72px;padding:10px 16px;border-top:1px solid rgba(90,56,38,.25);background:inherit;flex-wrap:wrap}.reader-footer>div{min-width:120px;text-align:center;font:14px Inter,sans-serif}.reader-footer>div span{display:block;font-size:12px;opacity:.65;margin-top:2px}.reader-nav,.read-aloud{border:1px solid rgba(90,56,38,.3);background:rgba(255,255,255,.35);color:inherit;border-radius:99px;padding:10px 15px;cursor:pointer}.reader-nav:disabled{opacity:.35;cursor:not-allowed}.read-aloud{font-weight:600}.read-aloud.speaking{background:#342018;color:#FAF5EB}.night .reader-theme.active,.night .read-aloud.speaking{background:#C99B57;color:#1E120D}.night .reader-nav,.night .reader-theme,.night .font-btn,.night .read-aloud{border-color:#5A3826;background:#24150F;color:#FAF5EB}.night .reader-demo-label,.night .reader-kicker,.night .reader-author{color:#A89586}
+.collection-empty{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:240px;gap:8px;color:var(--text2);text-align:center}.collection-empty span{font-size:13px;color:var(--text3)}
+@media(max-width:720px){.modal-acts{grid-template-columns:1fr}.summary-layout{grid-template-columns:1fr}.summary-tabs{display:flex;flex-direction:column}.feature-modal{padding:20px;border-radius:18px}.reader-topbar{gap:10px;min-height:auto;padding:10px 12px}.reader-title{font-size:21px}.reader-controls{width:100%;justify-content:space-between}.reader-themes{margin-right:0}.reader-paper h1{font-size:31px}.reader-text{line-height:1.72}.reader-footer{gap:8px}.reader-footer>div{order:3;width:100%}.reader-nav{order:1}.read-aloud{order:2}}
+
+/* Additive literature exploration features */
+.mc-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:12px}.mc-choice{border:1px solid rgba(201,155,87,.25);background:rgba(255,255,255,.03);color:inherit;padding:14px;border-radius:14px;text-align:left;cursor:pointer;font:inherit}.mc-choice:hover,.mc-choice.active{border-color:#C99B57;background:rgba(201,155,87,.12)}.mc-result{margin-top:16px;padding:15px;border:1px solid rgba(201,155,87,.2);border-radius:16px;background:rgba(0,0,0,.12)}.mc-perspectives{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}.mc-persp{padding:12px;border-radius:12px;background:rgba(255,255,255,.035);border-left:3px solid #C99B57}.mc-persp strong{display:block;margin-bottom:5px}.perspective-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}.perspective-tabs button{border:1px solid rgba(201,155,87,.25);background:transparent;color:inherit;border-radius:999px;padding:9px 12px;cursor:pointer}.perspective-tabs button.active{background:#C99B57;color:#1e120d}.perspective-output{padding:18px;border-radius:16px;background:rgba(255,255,255,.035);border:1px solid rgba(201,155,87,.18);line-height:1.7}.history-period{text-align:center;padding:18px;border:1px solid rgba(201,155,87,.25);border-radius:18px;background:linear-gradient(135deg,rgba(201,155,87,.16),rgba(255,255,255,.02));margin-bottom:14px}.history-period b{font-family:'Playfair Display',serif;font-size:25px;display:block}.history-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.history-card{padding:14px;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid rgba(201,155,87,.14)}.history-card h4{margin:0 0 7px;font-size:13px;letter-spacing:.08em}.then-now{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}.then-now>div{padding:16px;border-radius:16px;border:1px solid rgba(201,155,87,.18);background:rgba(255,255,255,.035)}.feature-unavailable{text-align:center;padding:28px;color:var(--text2)}
+@media(max-width:720px){.mc-grid,.history-grid,.then-now,.mc-perspectives{grid-template-columns:1fr}.mc-choice{min-height:48px}.perspective-tabs{flex-direction:column}.perspective-tabs button{width:100%;text-align:left}}
+
+
+/* ===== ADDITIVE VISUAL FEATURES: Build Your Own Shelf / Library Mood / 3D Book ===== */
+.bos-launcher{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 18px}
+.bos-launcher button{border:1px solid rgba(201,161,87,.35);background:rgba(35,27,23,.75);color:var(--text-light);border-radius:14px;padding:11px 15px;font-family:Inter,sans-serif;font-weight:700;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.18);transition:.25s}
+.bos-launcher button:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 12px 28px rgba(0,0,0,.28)}
+.bos-modal-bg,.book3d-overlay{position:fixed;inset:0;z-index:10050;background:rgba(8,7,6,.78);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;padding:18px}
+.bos-modal-bg.open,.book3d-overlay.open{display:flex}
+.bos-panel{width:min(1050px,96vw);max-height:90vh;overflow:auto;background:linear-gradient(145deg,#211916,#120f0d);border:1px solid rgba(201,161,87,.28);border-radius:22px;box-shadow:0 28px 80px rgba(0,0,0,.55);padding:22px;position:relative;color:var(--text-light)}
+.bos-close,.book3d-skip{position:absolute;right:16px;top:14px;border:0;background:rgba(255,255,255,.08);color:var(--text-light);border-radius:10px;padding:8px 11px;cursor:pointer;font-weight:700}
+.bos-title-row{display:flex;gap:12px;align-items:center;margin-bottom:18px;padding-right:70px}.bos-title-row h2{font-family:"Playfair Display",serif;margin:0}
+.bos-title-input{background:#16110f;border:1px solid rgba(201,161,87,.25);color:#f4ead8;border-radius:10px;padding:9px 12px;font:600 16px Inter,sans-serif;max-width:320px}
+.bos-layout{display:grid;grid-template-columns:1.05fr .95fr;gap:20px}.bos-section{border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:15px;background:rgba(255,255,255,.025)}
+.bos-section h3{font-family:"Playfair Display",serif;margin:0 0 12px}
+.bos-book-picker{display:grid;grid-template-columns:repeat(auto-fill,minmax(115px,1fr));gap:10px;max-height:54vh;overflow:auto;padding-right:3px}
+.bos-pick{border:1px solid rgba(255,255,255,.09);background:#181311;border-radius:11px;padding:7px;color:#e9ddca;text-align:left;cursor:pointer;transition:.2s}.bos-pick.selected{outline:2px solid var(--accent);transform:translateY(-2px)}
+.bos-pick img{width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:7px;display:block;background:#2b211d}.bos-pick b{font-size:11px;display:block;margin-top:7px;line-height:1.25}
+.bos-wood{min-height:270px;padding:24px 16px 34px;background:linear-gradient(180deg,rgba(31,21,16,.45),rgba(11,8,7,.5)),repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 2px,transparent 2px 8px);border-radius:12px;position:relative;display:flex;align-items:flex-end;gap:7px;overflow:auto}
+.bos-wood:after{content:"";position:absolute;left:0;right:0;bottom:11px;height:17px;background:linear-gradient(#8c5835,#5b331e 55%,#2f190f);border-radius:3px;box-shadow:0 8px 14px rgba(0,0,0,.45)}
+.bos-shelf-book{width:76px;min-width:76px;position:relative;z-index:1;cursor:pointer;transition:.25s transform}.bos-shelf-book:hover{transform:translateY(-8px) rotate(-1deg);filter:drop-shadow(0 13px 10px rgba(0,0,0,.42))}
+.bos-shelf-book img{width:100%;height:115px;object-fit:cover;border-radius:4px 4px 2px 2px;display:block}.bos-shelf-fallback{height:115px;border-radius:4px;padding:8px;font:700 12px/1.2 "Playfair Display",serif;display:flex;align-items:flex-end;color:#fff}
+.bos-book-controls{display:flex;justify-content:center;gap:4px;margin-top:5px}.bos-mini{border:0;background:rgba(255,255,255,.1);color:#fff;border-radius:6px;padding:3px 6px;cursor:pointer;font-size:11px}
+.bos-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.bos-action{border:1px solid rgba(201,161,87,.3);background:#2b211b;color:#f5ead8;border-radius:9px;padding:9px 12px;cursor:pointer;font-weight:700}.bos-action.primary{background:var(--accent);color:#21170f}
+.lm-pop{position:fixed;z-index:10060;right:22px;top:76px;width:min(320px,calc(100vw - 28px));padding:14px;border-radius:16px;background:linear-gradient(145deg,#211916,#110d0b);border:1px solid rgba(201,161,87,.25);box-shadow:0 20px 60px rgba(0,0,0,.45);display:none}.lm-pop.open{display:block}.lm-pop h3{font-family:"Playfair Display",serif;margin:0 0 10px}.lm-option{width:100%;text-align:left;margin:5px 0;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.035);color:var(--text-light);padding:11px;border-radius:10px;cursor:pointer;transition:.2s}.lm-option:hover,.lm-option.active{border-color:var(--accent);background:rgba(201,161,87,.12)}
+body{transition:background .55s,color .35s}.lm-midnight .main{background:radial-gradient(circle at 75% 0,rgba(35,55,96,.2),transparent 38%)}.lm-cozy .main{background:radial-gradient(circle at 20% 0,rgba(154,93,45,.18),transparent 42%)}.lm-rainy .main{background:linear-gradient(135deg,rgba(32,45,58,.22),transparent 45%),radial-gradient(circle at 85% 10%,rgba(105,132,150,.12),transparent 30%)}.lm-candle .main{background:radial-gradient(circle at 50% 5%,rgba(212,149,67,.17),transparent 36%)}.lm-rainy .main:after{content:"";pointer-events:none;position:fixed;inset:0;background:repeating-linear-gradient(105deg,transparent 0 22px,rgba(180,210,225,.045) 23px 24px);opacity:.7}
+.lm-midnight .content{background:linear-gradient(180deg,#161b2b 0%,#101522 100%)}.lm-midnight .topbar{background:rgba(20,25,40,.94)}.lm-midnight .topbar-title,.lm-midnight .content{color:#eee7dc}
+.lm-cozy .content{background:radial-gradient(circle at 20% 0,rgba(194,125,65,.18),transparent 42%),#2a1b15}.lm-cozy .topbar{background:rgba(58,36,25,.94)}.lm-cozy .topbar-title,.lm-cozy .content{color:#f7ead8}
+.lm-rainy .content{background:linear-gradient(135deg,rgba(40,55,70,.92),rgba(24,31,40,.96))}.lm-rainy .topbar{background:rgba(28,38,50,.94)}.lm-rainy .topbar-title,.lm-rainy .content{color:#edf2f5}
+.lm-candle .content{background:radial-gradient(circle at 50% 8%,rgba(231,157,67,.26),transparent 34%),linear-gradient(180deg,#3a261c,#1d1410)}.lm-candle .topbar{background:rgba(58,38,28,.94)}.lm-candle .topbar-title,.lm-candle .content{color:#fff2dc}.lm-candle .shelves-wrap{box-shadow:0 0 45px rgba(237,164,76,.18),0 20px 60px rgba(0,0,0,.5)}
+
+.book3d-stage{width:min(700px,92vw);height:min(600px,78vh);display:flex;align-items:center;justify-content:center;perspective:1400px;position:relative}
+.book3d-object{width:240px;height:350px;position:relative;transform-style:preserve-3d;animation:book3d-arrive 2.1s cubic-bezier(.2,.8,.2,1) forwards}
+.book3d-pageblock{position:absolute;inset:10px 8px 10px 16px;background:repeating-linear-gradient(0deg,#eadfc8 0 2px,#d8c9af 2px 3px),#e7dcc5;transform:translateZ(-7px);box-shadow:inset -8px 0 14px rgba(70,45,25,.22),0 18px 35px rgba(0,0,0,.45);border-radius:2px}
+.book3d-back{position:absolute;inset:0;background:var(--book3d-grad);transform:translateZ(-16px) rotateY(0deg);border-radius:4px;box-shadow:inset 0 0 0 2px rgba(255,255,255,.05)}
+.book3d-spine{position:absolute;left:-13px;top:4px;width:18px;height:342px;background:linear-gradient(90deg,rgba(0,0,0,.45),rgba(255,255,255,.14),rgba(0,0,0,.3)),var(--book3d-grad);transform:rotateY(90deg) translateZ(8px);transform-origin:right;border-radius:2px;box-shadow:0 0 12px rgba(0,0,0,.4)}
+.book3d-front{position:absolute;inset:0;background:var(--book3d-grad);transform-origin:left center;transform:translateZ(8px);border-radius:4px;overflow:hidden;box-shadow:0 18px 35px rgba(0,0,0,.42);animation:book3d-cover 2.1s ease-in-out forwards}
+.book3d-front img{width:100%;height:100%;object-fit:cover;display:block}.book3d-fallback{height:100%;padding:28px 20px;display:flex;flex-direction:column;justify-content:flex-end;color:#fff;font-family:"Playfair Display",serif;font-size:28px;font-weight:700;background:var(--book3d-grad)}.book3d-fallback small{font:500 14px Inter,sans-serif;margin-top:12px}
+.book3d-pages{position:absolute;left:17px;top:11px;width:218px;height:328px;transform-style:preserve-3d;pointer-events:none}.book3d-page{position:absolute;inset:0;background:linear-gradient(90deg,#d9c9ae,#f4ecd9 8%,#f7f0df 92%,#dcccb2);transform-origin:left center;border-radius:1px;box-shadow:0 2px 5px rgba(0,0,0,.22);padding:36px 26px;color:#725f4d;font:10px/1.55 Georgia,serif;backface-visibility:hidden}.book3d-page:before{content:"Chapter I";display:block;text-align:center;font-family:"Playfair Display",serif;font-size:17px;margin:15px 0 26px;color:#554433}.book3d-page:after{content:"Book • Author\A\A ─────────\A\A The story waits between these pages,\A where every opening begins a journey.";white-space:pre-wrap;opacity:.65}.book3d-page:nth-child(1){animation:book3d-page 1.25s .75s ease-in forwards}.book3d-page:nth-child(2){animation:book3d-page 1.25s .98s ease-in forwards}.book3d-page:nth-child(3){animation:book3d-page 1.2s 1.18s ease-in forwards}.book3d-page:nth-child(4){animation:book3d-page 1.1s 1.35s ease-in forwards}
+.book3d-caption{position:absolute;bottom:0;text-align:center;color:#eadcc7}.book3d-caption h2{font-family:"Playfair Display",serif;margin:0;font-size:24px}.book3d-caption p{margin:6px 0 0;color:#bba99a}
+@keyframes book3d-arrive{0%{opacity:0;transform:rotateY(-42deg) rotateX(9deg) scale(.75)}28%{opacity:1}65%{transform:rotateY(-20deg) rotateX(4deg) scale(1)}100%{transform:rotateY(-6deg) rotateX(2deg) scale(1)}}
+@keyframes book3d-cover{0%,28%{transform:translateZ(8px) rotateY(0)}70%,100%{transform:translateZ(8px) rotateY(-152deg)}}
+@keyframes book3d-page{0%,20%{transform:translateZ(0) rotateY(0)}100%{transform:translateZ(3px) rotateY(-164deg)}}
+@media(max-width:700px){.bos-layout{grid-template-columns:1fr}.bos-book-picker{max-height:34vh}.book3d-object{transform:scale(.76);margin-top:-30px}.book3d-stage{height:500px}.book3d-caption{bottom:5px}.lm-pop{top:62px;right:14px}}
+
+<style>
+/* ===== PERFECT DAY — additive theme connection only ===== */
+.perfect-day-heading{margin:0 auto 22px;padding:8px 0 4px;text-align:center;color:var(--text)}
+.perfect-day-heading h1{margin:0;font-family:'Playfair Display',serif;font-size:2.15rem;font-weight:700;line-height:1.12;color:var(--accent);letter-spacing:.025em;text-shadow:0 0 1px var(--gold),0 2px 8px rgba(36,21,15,.12)}
+.perfect-day-heading p{margin:7px 0 0;font-family:'Inter',sans-serif;font-size:.82rem;line-height:1.4;color:var(--text2);letter-spacing:.02em}
+</style>
+</style>
+</head>
+<body>
+<aside class="sidebar" id="sidebar">
+<a class="logo" href="#"><div class="logo-icon">📖</div>Bookmark</a>
+<div class="nav-sec">My Library</div>
+<div class="nav-item active" onclick="setStatus('all',this)">
+<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"></path></svg>
+    All Books<span class="nbadge" id="badge-total">0</span>
+</div>
+<div class="nav-item" onclick="setStatus('reading',this)">
+<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 16 14"></polyline></svg>
+    Reading Now<span class="nbadge blue" id="badge-reading">0</span>
+</div>
+<div class="nav-item" onclick="setStatus('tbr',this)">
+<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><line x1="8" x2="21" y1="6" y2="6"></line><line x1="8" x2="21" y1="12" y2="12"></line><line x1="8" x2="21" y1="18" y2="18"></line><line x1="3" x2="3.01" y1="6" y2="6"></line><line x1="3" x2="3.01" y1="12" y2="12"></line><line x1="3" x2="3.01" y1="18" y2="18"></line></svg>
+    Want to Read
+  </div>
+<div class="nav-item" onclick="setStatus('read',this)">
+<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    Read
+  </div><div class="nav-item" id="nav-library" onclick="setCollection('library',this)">📚 My Library</div>
+<div class="sdiv"></div>
+<div class="nav-sec">Genres</div>
+<div style="padding:0 6px">
+<div class="fpill active" onclick="setCat('all',this)"><span class="fdot" style="background:var(--accent)"></span>All Genres</div>
+<div class="fpill" onclick="setCat('Fantasy',this)"><span class="fdot" style="background:var(--purple)"></span>Fantasy</div>
+<div class="fpill" onclick="setCat('Science Fiction',this)"><span class="fdot" style="background:var(--blue)"></span>Sci-Fi</div>
+<div class="fpill" onclick="setCat('Romance',this)"><span class="fdot" style="background:#E854A8"></span>Romance</div>
+<div class="fpill" onclick="setCat('Thriller',this)"><span class="fdot" style="background:var(--red)"></span>Thriller</div>
+<div class="fpill" onclick="setCat('Classic',this)"><span class="fdot" style="background:#A0A0A0"></span>Classics</div>
+</div>
+<div class="sdiv"></div>
+<div class="nav-item" id="nav-favorites" onclick="setCollection('favorites',this)"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>Favorites</div>
+<div class="nav-item" id="nav-wishlist" onclick="setCollection('wishlist',this)"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path></svg>Wish List</div>
+<div class="sb-bottom">
+<div class="user-card"><div class="avatar">📚</div><div><div style="font-size:.84rem;font-weight:600;color:var(--text-light)">My Library</div><div id="user-stats" style="font-size:.7rem;color:#8C7667">Loading...</div></div></div>
+</div>
+</aside>
+<div class="sidebar-backdrop" id="sidebar-backdrop" onclick="closeSidebar()"></div>
+<div class="main">
+<div class="topbar">
+<button class="hamburger" onclick="toggleSidebar()">
+<svg fill="none" height="21" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="21"><line x1="3" x2="21" y1="6" y2="6"></line><line x1="3" x2="21" y1="12" y2="12"></line><line x1="3" x2="21" y1="18" y2="18"></line></svg>
+</button>
+<span class="topbar-title" id="topbar-title">My Library</span>
+<div class="topbar-right">
+<div class="sw">
+<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" x2="16.65" y1="21" y2="16.65"></line></svg>
+<input class="search" id="si" oninput="searchBooks(this.value)" placeholder="Search books…" type="text"/>
+</div>
+<div class="view-toggle">
+<button class="vbtn active" onclick="setView('covers',this)">
+<svg fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><rect height="7" width="7" x="3" y="3"></rect><rect height="7" width="7" x="14" y="3"></rect><rect height="7" width="7" x="3" y="14"></rect><rect height="7" width="7" x="14" y="14"></rect></svg>Covers
+        </button>
+<button class="vbtn" onclick="setView('spines',this)">
+<svg fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><line x1="3" x2="21" y1="6" y2="6"></line><line x1="3" x2="21" y1="12" y2="12"></line><line x1="3" x2="21" y1="18" y2="18"></line></svg>Spines
+        </button>
+<button class="vbtn" onclick="setView('shelf',this)">
+<svg fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><rect height="20" rx="1" width="4" x="2" y="2"></rect><rect height="18" rx="1" width="4" x="8" y="4"></rect><rect height="20" rx="1" width="4" x="14" y="2"></rect><rect height="16" rx="1" width="2" x="20" y="5"></rect></svg>Shelf
+        </button>
+</div>
+<select class="ssort" onchange="sortBooks(this.value)">
+<option value="default">Default</option>
+<option value="title">Title A–Z</option>
+<option value="author">Author</option>
+<option value="rating">Top Rated</option>
+</select>
+</div>
+</div>
+<div class="content">
+<div class="stats-strip">
+<div class="stat-card"><div class="stat-num" id="stat-total">0 <span class="stat-icon">📚</span></div><div class="stat-label">Total Books</div></div>
+<div class="stat-card"><div class="stat-num" id="stat-read">0 <span class="stat-icon">📖</span></div><div class="stat-label">Read</div></div>
+<div class="stat-card"><div class="stat-num" id="stat-reading">0 <span class="stat-icon">📖</span></div><div class="stat-label">Currently Reading</div></div>
+<div class="stat-card"><div class="stat-num" id="stat-tbr">0 <span class="stat-icon">🔖</span></div><div class="stat-label">Want to Read</div></div>
+<div class="stat-card"><div class="stat-num" id="stat-pages">0 <span class="stat-icon">📄</span></div><div class="stat-label">Pages Read</div></div>
+</div>
+<div class="perfect-day-heading" aria-label="Perfect Day">
+<h1>✦ PERFECT DAY ✦</h1>
+<p>It begins with the perfect book.</p>
+</div>
+<div class="bos-launcher" id="bos-launcher">
+<button type="button" onclick="bosOpenShelf()">🪵 BUILD YOUR OWN SHELF</button>
+<button type="button" onclick="lmToggle()">✨ LIBRARY MOOD</button>
+<button type="button" onclick="book3dLaunchCurrent()">📖 OPEN THE BOOK</button>
+</div><div class="bk-grid" id="view-covers"></div>
+<div class="sp-list" id="view-spines" style="display:none"></div>
+<div id="view-shelf" style="display:none"><div class="shelves-wrap" id="shelf-wrap"></div></div>
+</div>
+</div>
+<div class="chat-bubble" onclick="toggleChat()">💬</div>
+<div class="chat-window" id="chat-window">
+<div class="chat-header">📚 Book Assistant<button class="chat-close" onclick="toggleChat()">×</button></div>
+<div class="chat-messages" id="chat-messages"></div>
+<div class="chat-input-wrap">
+<input class="chat-input" id="chat-input" onkeypress="if(event.key==='Enter') sendMessage()" placeholder="Ask about books..." type="text"/>
+<button class="chat-send" onclick="sendMessage()">→</button>
+</div>
+</div>
+<div class="modal-bg" id="modal" onclick="closeModal(event)">
+<div class="modal">
+<div class="modal-hero"><img alt="" id="m-bg" src=""/><div class="modal-hero-grad"></div><div class="modal-cover"><img alt="" id="m-cover" src=""/><div class="modal-cover-fallback" id="m-cover-fallback"><div class="mcf-title"></div><div class="mcf-author"></div></div></div></div>
+<button class="modal-close" onclick="document.getElementById('modal').classList.remove('open')">✕</button>
+<div class="modal-body">
+<div class="modal-title" id="m-title"></div>
+<div class="modal-author" id="m-auth"></div>
+<div class="modal-tags" id="m-tags"></div>
+<div class="modal-stars" id="m-stars"></div>
+<div class="modal-acts">
+<button class="btn btn-p" onclick="markStatus(this,'read')">✓ Mark Read</button>
+<button class="btn btn-o" onclick="markStatus(this,'reading')">● Reading</button>
+<button class="btn btn-o" onclick="markStatus(this,'tbr')">○ Want to Read</button>
+<button class="btn btn-o" id="modal-fav-btn" onclick="markFav(this)">★ Favorite</button>
+<button class="btn btn-p feature-read" onclick="openReaderForCurrentBook()">📖 Read Book</button>
+<button class="btn btn-o feature-summary" onclick="openSummaryForCurrentBook()">✨ AI Summary</button>
+<button class="btn btn-p feature-assistant" onclick="openAssistantForCurrentBook()">💬 Ask AI Assistant About This Book</button>
+<button class="btn btn-o" onclick="openMoralCompass()">🧭 Moral Compass</button>
+<button class="btn btn-o" onclick="openDifferentPerspectives()">👥 Different Perspectives</button>
+<button class="btn btn-o" onclick="openHistoricalTimeMachine()">⏳ Historical Time Machine</button>
+</div>
+</div>
+</div>
+</div>
+<div aria-hidden="true" class="feature-modal-bg" id="summary-modal" onclick="closeFeatureModal(event,'summary-modal')">
+<div aria-labelledby="summary-title" aria-modal="true" class="feature-modal summary-modal-card" role="dialog">
+<button class="feature-close" onclick="document.getElementById('summary-modal').classList.remove('open')">×</button>
+<div class="feature-heading"><span>✨</span><h2 id="summary-title">AI Summary</h2></div>
+<div class="summary-layout">
+<div class="summary-tabs" id="summary-tabs">
+<button class="summary-tab active" data-tab="short" onclick="showSummaryTab('short',this)">Short Summary</button>
+<button class="summary-tab" data-tab="detailed" onclick="showSummaryTab('detailed',this)">Detailed Summary</button>
+<button class="summary-tab" data-tab="themes" onclick="showSummaryTab('themes',this)">Main Themes</button>
+<button class="summary-tab" data-tab="characters" onclick="showSummaryTab('characters',this)">Important Characters</button>
+<button class="summary-tab" data-tab="aspects" onclick="showSummaryTab('aspects',this)">Key Aspects</button>
+</div>
+<div class="summary-panel">
+<div class="summary-progress"><span id="summary-progress-bar"></span></div>
+<div id="summary-content"></div>
+</div>
+</div>
+</div>
+</div>
+<div aria-hidden="true" class="feature-modal-bg" id="assistant-modal" onclick="closeFeatureModal(event,'assistant-modal')">
+<div aria-labelledby="assistant-title" aria-modal="true" class="feature-modal assistant-card" role="dialog">
+<button class="feature-close" onclick="document.getElementById('assistant-modal').classList.remove('open')">×</button>
+<div class="feature-heading"><span>💬</span><h2 id="assistant-title">Ask AI Assistant About This Book</h2></div>
+<div class="assistant-context" id="assistant-context"></div>
+<div class="assistant-messages" id="assistant-messages"></div>
+<div class="assistant-input-row"><input autocomplete="off" id="assistant-input" onkeypress="if(event.key==='Enter')askBookAssistant()" placeholder="Ask about the book…"/><button onclick="askBookAssistant()">Send</button></div>
+</div>
+</div>
+
+<div aria-hidden="true" class="feature-modal-bg" id="mc-modal" onclick="closeFeatureModal(event,'mc-modal')"><div class="feature-modal" role="dialog" aria-modal="true"><button class="feature-close" onclick="document.getElementById('mc-modal').classList.remove('open')">×</button><div class="feature-heading"><span>🧭</span><h2>Moral Compass</h2></div><div id="mc-body"></div></div></div>
+<div aria-hidden="true" class="feature-modal-bg" id="perspective-modal" onclick="closeFeatureModal(event,'perspective-modal')"><div class="feature-modal" role="dialog" aria-modal="true"><button class="feature-close" onclick="document.getElementById('perspective-modal').classList.remove('open')">×</button><div class="feature-heading"><span>👥</span><h2>Different Perspectives</h2></div><div id="perspective-body"></div></div></div>
+<div aria-hidden="true" class="feature-modal-bg" id="history-modal" onclick="closeFeatureModal(event,'history-modal')"><div class="feature-modal" role="dialog" aria-modal="true"><button class="feature-close" onclick="document.getElementById('history-modal').classList.remove('open')">×</button><div class="feature-heading"><span>⏳</span><h2>Historical Time Machine</h2></div><div id="history-body"></div></div></div>
+<div aria-hidden="true" class="reader" id="reader">
+<header class="reader-topbar">
+<button class="reader-return" onclick="closeReader()">← <span>Return to Library</span></button>
+<div class="reader-bookhead"><div class="reader-title" id="reader-title"></div><div class="reader-author" id="reader-author"></div></div>
+<div class="reader-controls">
+<div class="reader-themes">
+<button class="reader-theme active" data-theme="parchment" onclick="setReaderTheme('parchment',this)">Parchment</button>
+<button class="reader-theme" data-theme="sepia" onclick="setReaderTheme('sepia',this)">Sepia</button>
+<button class="reader-theme" data-theme="night" onclick="setReaderTheme('night',this)">Night</button>
+</div>
+<button aria-label="Decrease text size" class="font-btn" onclick="changeReaderFont(-1)">−</button>
+<span id="reader-font-size">18px</span>
+<button aria-label="Increase text size" class="font-btn" onclick="changeReaderFont(1)">+</button>
+</div>
+</header>
+<main class="reader-main">
+<article class="reader-paper">
+<div class="reader-demo-label">Demo reading edition • Public-domain text • Local/offline</div>
+<div class="reader-kicker" id="reader-chapter-kicker"></div>
+<h1 id="reader-chapter-title"></h1>
+<div class="reader-rule"></div>
+<div class="reader-text" id="reader-text"></div>
+</article>
+</main>
+<footer class="reader-footer">
+<button class="reader-nav" id="reader-prev" onclick="previousChapter()">Previous</button>
+<div><strong id="reader-section">Section 1 of 1</strong><span id="reader-progress">0%</span></div>
+<button class="reader-nav" id="reader-next" onclick="nextChapter()">Next</button>
+<button class="read-aloud" id="read-aloud-btn" onclick="toggleReadAloud()">🔊 <span>Read Aloud</span></button>
+</footer>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const BOOKS=[
+  {t:"Fourth Wing",a:"Rebecca Yarros",isbn:"9781649374042",s:"tbr",r:0,g:"Fantasy",p:517,fav:false,gr:"linear-gradient(150deg,#2C1654,#7B3FA0,#C49A3C)"},
+  {t:"A Court of Thorns and Roses",a:"Sarah J. Maas",isbn:"9781619634459",s:"tbr",r:0,g:"Romance",p:419,fav:false,gr:"linear-gradient(150deg,#8B1A2A,#D4536B,#F0C060)"},
+  {t:"Iron Flame",a:"Rebecca Yarros",isbn:"9781649374172",s:"tbr",r:0,g:"Fantasy",p:623,fav:false,gr:"linear-gradient(150deg,#1A3A5C,#2E6FA8,#C0392B)"},
+  {t:"The Name of the Wind",a:"Patrick Rothfuss",isbn:"9780756404741",s:"tbr",r:0,g:"Fantasy",p:662,fav:false,gr:"linear-gradient(150deg,#1C2E1A,#3D6B38,#C49A3C)"},
+  {t:"Dune",a:"Frank Herbert",isbn:"9780441013593",s:"tbr",r:0,g:"Science Fiction",p:688,fav:false,gr:"linear-gradient(150deg,#3D2B06,#8B6914,#D4A017)"},
+  {t:"Six of Crows",a:"Leigh Bardugo",isbn:"9781627792127",s:"tbr",r:0,g:"Fantasy",p:462,fav:false,gr:"linear-gradient(150deg,#0D0D1A,#2A2A5A,#C0392B)"},
+  {t:"The Cruel Prince",a:"Holly Black",isbn:"9780316310314",s:"tbr",r:0,g:"Fantasy",p:370,fav:false,gr:"linear-gradient(150deg,#0A1A10,#1A5C2E,#8BC43C)"},
+  {t:"Project Hail Mary",a:"Andy Weir",isbn:"9780593135204",s:"tbr",r:0,g:"Science Fiction",p:476,fav:false,gr:"linear-gradient(150deg,#050A1A,#0A1A40,#1A6BA8)"},
+  {t:"The Night Circus",a:"Erin Morgenstern",isbn:"9780385534635",s:"tbr",r:0,g:"Fantasy",p:387,fav:false,gr:"linear-gradient(150deg,#0D0D0D,#2A2A2A,#D4D4D4)"},
+  {t:"Circe",a:"Madeline Miller",isbn:"9780316556347",s:"tbr",r:0,g:"Fantasy",p:393,fav:false,gr:"linear-gradient(150deg,#2A1A0A,#7A4A1A,#C4A060)"},
+  {t:"The Way of Kings",a:"Brandon Sanderson",isbn:"9780765365279",s:"tbr",r:0,g:"Fantasy",p:1007,fav:false,gr:"linear-gradient(150deg,#001A2A,#0A3A6A,#3A8AC4)"},
+  {t:"Mistborn",a:"Brandon Sanderson",isbn:"9780765311788",s:"tbr",r:0,g:"Fantasy",p:541,fav:false,gr:"linear-gradient(150deg,#0A0A0A,#1A1A2A,#8A8AAA)"},
+  {t:"1984",a:"George Orwell",isbn:"9780451524935",s:"tbr",r:0,g:"Classic",p:328,fav:false,gr:"linear-gradient(150deg,#0A0A0A,#1A1A1A,#404040)"},
+  {t:"Brave New World",a:"Aldous Huxley",isbn:"9780060850524",s:"tbr",r:0,g:"Classic",p:311,fav:false,gr:"linear-gradient(150deg,#001A00,#0A5A0A,#40AA40)"},
+  {t:"The Handmaid's Tale",a:"Margaret Atwood",isbn:"9780385490818",s:"tbr",r:0,g:"Classic",p:311,fav:false,gr:"linear-gradient(150deg,#1A0000,#5A0000,#CC0000)"},
+  {t:"Pride and Prejudice",a:"Jane Austen",isbn:"9780141439518",s:"tbr",r:0,g:"Classic",p:432,fav:false,gr:"linear-gradient(150deg,#0A1A10,#2A5A3A,#6AC080)"},
+  {t:"Ender's Game",a:"Orson Scott Card",isbn:"9780812550702",s:"tbr",r:0,g:"Science Fiction",p:352,fav:false,gr:"linear-gradient(150deg,#000A1A,#001A40,#0040AA)"},
+  {t:"The Martian",a:"Andy Weir",isbn:"9780804139021",s:"tbr",r:0,g:"Science Fiction",p:369,fav:false,gr:"linear-gradient(150deg,#1A0500,#6A1A00,#CC4400)"},
+  {t:"Ready Player One",a:"Ernest Cline",isbn:"9780307887436",s:"tbr",r:0,g:"Science Fiction",p:374,fav:false,gr:"linear-gradient(150deg,#00001A,#00005A,#4400CC)"},
+  {t:"The Hobbit",a:"J.R.R. Tolkien",isbn:"9780547928227",s:"tbr",r:0,g:"Fantasy",p:310,fav:false,gr:"linear-gradient(150deg,#1A1A00,#5A5A00,#C0C000)"},
+  {t:"The Secret History",a:"Donna Tartt",isbn:"9780679410324",s:"tbr",r:0,g:"Thriller",p:544,fav:false,gr:"linear-gradient(150deg,#0A0A1A,#1A1A3A,#4A4A8A)"},
+  {t:"The Girl with the Dragon Tattoo",a:"Stieg Larsson",isbn:"9780307454546",s:"tbr",r:0,g:"Thriller",p:465,fav:false,gr:"linear-gradient(150deg,#0A0A0A,#1A0A0A,#5A1A1A)"},
+  {t:"Harry Potter and the Sorcerer's Stone",a:"J.K. Rowling",isbn:"9780439708180",s:"tbr",r:0,g:"Fantasy",p:309,fav:false,gr:"linear-gradient(150deg,#2C0A00,#7A2A00,#C4500A)"},
+  {t:"The Notebook",a:"Nicholas Sparks",isbn:"9780446605236",s:"tbr",r:0,g:"Romance",p:214,fav:false,gr:"linear-gradient(150deg,#001020,#002A50,#5090C0)"},
+  {t:"The Poppy War",a:"R.F. Kuang",isbn:"9780062662590",s:"tbr",r:0,g:"Fantasy",p:544,fav:false,gr:"linear-gradient(150deg,#1A0000,#5A0A0A,#D42020)"},
+  {t:"Piranesi",a:"Susanna Clarke",isbn:"9781635575637",s:"tbr",r:0,g:"Fantasy",p:272,fav:false,gr:"linear-gradient(150deg,#0A1A2A,#1A3A5A,#4A8AC4)"},
+  {t:"The Invisible Life of Addie LaRue",a:"V.E. Schwab",isbn:"9780765387578",s:"tbr",r:0,g:"Fantasy",p:448,fav:false,gr:"linear-gradient(150deg,#0A0A1A,#1A1A3A,#C4A03C)"},
+  {t:"Atomic Habits",a:"James Clear",isbn:"9780735211292",s:"tbr",r:0,g:"Non-Fiction",p:319,fav:false,gr:"linear-gradient(150deg,#000A1A,#001A3A,#004A8A)"},
+  {t:"Sapiens",a:"Yuval Noah Harari",isbn:"9780062316097",s:"tbr",r:0,g:"Non-Fiction",p:443,fav:false,gr:"linear-gradient(150deg,#1A0A00,#4A2000,#A05000)"},
+  {t:"The Atlas Six",a:"Olivie Blake",isbn:"9781250886392",s:"tbr",r:0,g:"Fantasy",p:400,fav:false,gr:"linear-gradient(150deg,#0A001A,#2A0A5A,#7A3AA0)"},
+  {t:"Red Rising",a:"Pierce Brown",isbn:"9780345539786",s:"tbr",r:0,g:"Science Fiction",p:382,fav:false,gr:"linear-gradient(150deg,#1A0000,#6A0A0A,#CC1A1A)"},
+  {t:"Legendborn",a:"Tracy Deonn",isbn:"9781534441613",s:"tbr",r:0,g:"Fantasy",p:501,fav:false,gr:"linear-gradient(150deg,#0A1A10,#1A4A2A,#3A9A5A)"},
+  {t:"The Priory of the Orange Tree",a:"Samantha Shannon",isbn:"9781635570298",s:"tbr",r:0,g:"Fantasy",p:848,fav:false,gr:"linear-gradient(150deg,#1A0A00,#5A2A00,#C06A1A)"},
+  {t:"Throne of Glass",a:"Sarah J. Maas",isbn:"9781619630345",s:"tbr",r:0,g:"Fantasy",p:404,fav:false,gr:"linear-gradient(150deg,#1A1400,#5A4A00,#C0A000)"},
+  {t:"Shatter Me",a:"Tahereh Mafi",isbn:"9780062085481",s:"tbr",r:0,g:"Science Fiction",p:338,fav:false,gr:"linear-gradient(150deg,#001A10,#0A4A2A,#1AAA6A)"},
+  {t:"The Starless Sea",a:"Erin Morgenstern",isbn:"9780385541213",s:"tbr",r:0,g:"Fantasy",p:498,fav:false,gr:"linear-gradient(150deg,#0A0A1A,#1A1A4A,#5050AA)"},
+  {t:"Jane Eyre",a:"Charlotte Brontë",isbn:"9780142437209",s:"tbr",r:0,g:"Classic",p:532,fav:false,gr:"linear-gradient(150deg,#1A0A0A,#5A1A1A,#A04040)"},
+  {t:"The Hitchhiker's Guide",a:"Douglas Adams",isbn:"9780345391803",s:"tbr",r:0,g:"Science Fiction",p:224,fav:false,gr:"linear-gradient(150deg,#001A1A,#003A3A,#00AAAA)"},
+  {t:"Foundation",a:"Isaac Asimov",isbn:"9780553382563",s:"tbr",r:0,g:"Science Fiction",p:255,fav:false,gr:"linear-gradient(150deg,#0A1A00,#1A4A00,#4AAA00)"},
+  {t:"Neuromancer",a:"William Gibson",isbn:"9780441569595",s:"tbr",r:0,g:"Science Fiction",p:271,fav:false,gr:"linear-gradient(150deg,#000A1A,#002A5A,#00AAFF)"},
+  {t:"Snow Crash",a:"Neal Stephenson",isbn:"9780553380957",s:"tbr",r:0,g:"Science Fiction",p:440,fav:false,gr:"linear-gradient(150deg,#1A0A0A,#4A1A1A,#8A5A5A)"},
+  {t:"Wuthering Heights",a:"Emily Brontë",isbn:"9780141439556",s:"tbr",r:0,g:"Classic",p:342,fav:false,gr:"linear-gradient(150deg,#1A0A1A,#4A1A4A,#8A4A8A)"},
+  {t:"The Count of Monte Cristo",a:"Alexandre Dumas",isbn:"9780141442256",s:"tbr",r:0,g:"Classic",p:928,fav:false,gr:"linear-gradient(150deg,#0A0A1A,#1A1A4A,#5A5AAA)"},
+  {t:"And Then There Were None",a:"Agatha Christie",isbn:"9780312330873",s:"tbr",r:0,g:"Thriller",p:272,fav:false,gr:"linear-gradient(150deg,#1A0A00,#4A2A00,#8A6020)"},
+  {t:"Rebecca",a:"Daphne du Maurier",isbn:"9780062073556",s:"tbr",r:0,g:"Thriller",p:449,fav:false,gr:"linear-gradient(150deg,#0A0A1A,#2A0A2A,#6A2A6A)"},
+  {t:"Misery",a:"Stephen King",isbn:"9781501192937",s:"tbr",r:0,g:"Thriller",p:310,fav:false,gr:"linear-gradient(150deg,#1A0000,#6A0000,#CC0000)"},
+];
+
+const CUSTOM_COVERS = {
+  "9781250886392": "https://m.media-amazon.com/images/I/91eK6G-O08L._AC_UF1000,1000_QL80_.jpg",
+  "9780553380957": "https://m.media-amazon.com/images/I/816aR-f33UL._AC_UF1000,1000_QL80_.jpg",
+  "9780141442256": "https://m.media-amazon.com/images/I/81tE3B-N11L._AC_UF1000,1000_QL80_.jpg"
+};
+
+function coverUrl(isbn,sz='M'){
+  if(CUSTOM_COVERS[isbn]) return CUSTOM_COVERS[isbn];
+  // Open Library's large edition is used for shelf/detail rendering so a tiny
+  // thumbnail is not enlarged into a blurry cover.
+  return `https://covers.openlibrary.org/b/isbn/${isbn}-${sz==='L'?'L':'M'}.jpg`;
+}
+function sc(g){const m=g.match(/#[0-9A-Fa-f]{6}/g);return m&&m[1]?m[1]:'#5A3826'}
+function stars(n){return n?'★'.repeat(n)+'<span style="color:var(--text3)">★</span>'.repeat(5-n):'—'}
+function stag(s){const m={read:'<span class="stag t-read">✓ Read</span>',reading:'<span class="stag t-reading">● Reading</span>',tbr:'<span class="stag t-tbr">○ TBR</span>'};return m[s]||''}
+
+let curView='covers',curStatus='all',curCat='all',searchQ='',sortM='default',curIsbn='',currentBook=null;
+// Collection filter used by My Library / Favorites / Wish List.
+let bmCollectionMode='all';
+
+function filtered(){
+  let b=[...BOOKS];
+  if(bmCollectionMode==='favorites') b=b.filter(x=>x.fav);
+  else if(bmCollectionMode==='wishlist') b=b.filter(x=>x.s==='tbr');
+  else if(bmCollectionMode==='library') b=b.filter(x=>x.s==='read'||x.s==='reading'||x.s==='tbr');
+  if(curStatus!=='all') b=b.filter(x=>x.s===curStatus);
+  if(curCat!=='all') b=b.filter(x=>x.g===curCat);
+  if(searchQ) b=b.filter(x=>x.t.toLowerCase().includes(searchQ)||x.a.toLowerCase().includes(searchQ));
+  if(sortM==='title') b.sort((a,x)=>a.t.localeCompare(x.t));
+  if(sortM==='author') b.sort((a,x)=>a.a.localeCompare(x.a));
+  if(sortM==='rating') b.sort((a,x)=>x.r-a.r);
+  return b;
+}
+
+function esc(v){return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+
+function renderCovers(){
+  const books=filtered();
+  const el=document.getElementById('view-covers');
+  el.innerHTML=books.map((b,i)=>`
+    <div class="bk-card" style="animation-delay:${Math.min(i,.15)*0.04+.02}s" onclick="openModal('${b.isbn}','${b.t.replace(/'/g,"\\'")}', '${b.a.replace(/'/g,"\\'")}', ${b.r}, '${b.g}')">
+      <div class="bk-cover">
+        <img src="${coverUrl(b.isbn,'M')}" alt="${b.t}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="bk-fb" style="background:${b.gr}"><div class="fbt">${b.t}</div><div class="fba">${b.a}</div></div>
+        ${b.fav?'<div style="position:absolute;top:7px;left:11px;color:var(--gold);font-size:.8rem">★</div>':''}
+        <div class="sbadge" style="background:${({read:'var(--green)',reading:'var(--blue)',tbr:'var(--accent)'})[b.s]||'var(--accent)'}">${({read:'✓',reading:'●',tbr:'○'})[b.s]||''}</div>
+      </div>
+      <div><div class="bk-title">${b.t}</div><div class="bk-auth">${b.a}</div><div class="bk-stars">${'★'.repeat(b.r)}</div></div>
+    </div>
+  `).join('');
+}
+
+function renderSpines(){
+  const books=filtered();
+  const el=document.getElementById('view-spines');
+  el.innerHTML=books.map((b,i)=>`
+    <div class="sp-row" style="animation-delay:${i*0.025}s" onclick="openModal('${b.isbn}','${b.t.replace(/'/g,"\\'")}', '${b.a.replace(/'/g,"\\'")}', ${b.r}, '${b.g}')">
+      <div class="sp-bar" style="background:${sc(b.gr)}"></div>
+      <img class="sp-thumb" src="${coverUrl(b.isbn,'M')}" alt="${b.t}" loading="lazy" onerror="this.style.display='none'">
+      <div class="sp-meta">
+        <div class="sp-title">${b.t}</div>
+        <div class="sp-auth">${b.a}</div>
+      </div>
+      <div class="sp-right">
+        ${stag(b.s)}
+        <span style="color:var(--gold);font-size:.8rem">${'★'.repeat(b.r)}</span>
+        <span class="sp-pgs">${b.p} pp</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+const DECOS=['🌿','🪴','📿','🧸','⏰','🪄','🕯️','📖'];
+
+function renderShelf(){
+  const books=filtered();
+  const el=document.getElementById('shelf-wrap');
+
+  const booksPerShelf=18;
+  const rows=[];
+  for(let i=0;i<books.length;i+=booksPerShelf) rows.push(books.slice(i,i+booksPerShelf));
+
+  const existingShelvesHtml = rows.map((row,ri)=>{
+    const booksHtml=row.map((b,bi)=>{
+      const hash=b.isbn.split('').reduce((a,b)=>(a<<5)-a+b.charCodeAt(0),0);
+      const v=Math.abs(hash%8);
+      const h=155+v*6;
+      const w=24+Math.floor(v*1.2);
+      return `<div class="e-book" style="width:${w}px;height:${h}px;background:${b.gr}" onclick="openModal('${b.isbn}','${b.t.replace(/'/g,"\\'")}', '${b.a.replace(/'/g,"\\'")}', ${b.r}, '${b.g}')" title="${b.t}">
+        <img src="${coverUrl(b.isbn,'L')}" alt="${b.t}" loading="lazy" decoding="async" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="e-book-fb" style="display:none"><span class="e-book-txt">${b.t}</span></div>
+      </div>`;
+    }).join('');
+
+    const labels=['📚 FANTASY','📖 SCI-FI','💕 ROMANCE','🔪 THRILLER','🏛️ CLASSICS','🎨 MORE'];
+    const label=labels[ri%labels.length];
+    const deco1=DECOS[(ri*2)%DECOS.length];
+    const deco2=DECOS[(ri*2+3)%DECOS.length];
+
+    return `
+      <div class="shelf-wall-row">
+        <div class="shelf-label-side">${label}</div>
+        <div class="bookend"><div class="bookend-shape"></div></div>
+        <div class="shelf-books-row">${booksHtml}<div class="shelf-deco">${deco1}</div><div class="shelf-deco">${deco2}</div></div>
+        <div class="bookend"><div class="bookend-shape"></div></div>
+      </div>
+      <div class="shelf-plank"></div>`;
+  }).join('');
+
+  const customShelves = typeof window.__bookmarkGetCustomShelves==='function' ? window.__bookmarkGetCustomShelves() : [];
+  const customShelvesHtml = customShelves.map(s=>{
+    const shelfBooks=(Array.isArray(s.books)?s.books:[]).map(id=>BOOKS.find(b=>b.isbn===id)).filter(Boolean);
+    const booksHtml=shelfBooks.map(b=>{
+      const hash=b.isbn.split('').reduce((a,c)=>(a<<5)-a+c.charCodeAt(0),0);
+      const v=Math.abs(hash%8), h=155+v*6, w=24+Math.floor(v*1.2);
+      return `<div class="e-book" style="width:${w}px;height:${h}px;background:${b.gr}" onclick="openModal('${b.isbn}','${b.t.replace(/'/g,"\\'")}', '${b.a.replace(/'/g,"\\'")}', ${b.r}, '${b.g}')" title="${b.t}">
+        <img src="${coverUrl(b.isbn,'L')}" alt="${b.t}" loading="lazy" decoding="async" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="e-book-fb" style="display:none"><span class="e-book-txt">${b.t}</span></div>
+      </div>`;
+    }).join('');
+    return `
+      <div class="shelf-wall-row">
+        <div class="shelf-label-side">${esc(s.title||'MY SHELF')}</div>
+        <div class="bookend"><div class="bookend-shape"></div></div>
+        <div class="shelf-books-row">${booksHtml||'<div class="shelf-deco">📚</div>'}</div>
+        <div class="bookend"><div class="bookend-shape"></div></div>
+      </div>
+      <div class="shelf-plank"></div>`;
+  }).join('');
+
+  el.innerHTML = existingShelvesHtml + customShelvesHtml;
+}
+
+// ROCK-SOLID DYNAMIC OPEN MODAL FUNCTION USING EXACT SAME SHELF COVER IMAGE
+function openModal(isbn, t, a, r, g){
+  let book = BOOKS.find(b => b.isbn === isbn);
+  if (!book && t) {
+    book = BOOKS.find(b => b.t.toLowerCase() === t.toLowerCase());
+  }
+  if (!book) return;
+
+  curIsbn = book.isbn;
+  currentBook = book;
+
+  const title = book.t;
+  const author = book.a;
+  const rating = book.r;
+  const genre = book.g;
+
+  const titleEl = document.getElementById('m-title');
+  const authEl = document.getElementById('m-auth');
+  const tagsEl = document.getElementById('m-tags');
+  const starsEl = document.getElementById('m-stars');
+
+  if (titleEl) titleEl.textContent = title;
+  if (authEl) authEl.textContent = 'by ' + author;
+  if (tagsEl) tagsEl.innerHTML = `<span class="modal-genre">${esc(genre)}</span>`;
+  if (starsEl) starsEl.innerHTML = stars(rating);
+
+  const heroImg = document.getElementById('m-bg');
+  const coverImg = document.getElementById('m-cover');
+  const fallback = document.getElementById('m-cover-fallback');
+  const hero = heroImg ? heroImg.parentElement : null;
+  const fallbackGradient = book.gr || 'linear-gradient(150deg,#342018,#24150F)';
+
+  if (hero) hero.style.background = fallbackGradient;
+  if (fallback) {
+    fallback.style.display = 'flex';
+    fallback.style.background = fallbackGradient;
+    const mcfTitle = fallback.querySelector('.mcf-title');
+    const mcfAuth = fallback.querySelector('.mcf-author');
+    if (mcfTitle) mcfTitle.textContent = title;
+    if (mcfAuth) mcfAuth.textContent = author;
+  }
+
+  const sources = [];
+  if (CUSTOM_COVERS[book.isbn]) sources.push(CUSTOM_COVERS[book.isbn]);
+  sources.push(`https://covers.openlibrary.org/b/isbn/${book.isbn}-L.jpg`);
+  sources.push(`https://covers.openlibrary.org/b/isbn/${book.isbn}-M.jpg`);
+
+  // Reset state for every newly opened book and try crisp sources in order.
+  let sourceIndex = 0;
+  const tryNextCover = () => {
+    if (sourceIndex >= sources.length) {
+      if (coverImg) { coverImg.removeAttribute('src'); coverImg.style.display='none'; }
+      if (fallback) fallback.style.display='flex';
+      return;
+    }
+    const src = sources[sourceIndex++];
+    if (coverImg) {
+      coverImg.style.display='block';
+      coverImg.style.opacity='1';
+      coverImg.src=src;
+    }
+    if (heroImg) {
+      heroImg.style.display='block';
+      heroImg.style.opacity='1';
+      heroImg.src=src;
+    }
+  };
+
+  if (coverImg) {
+    coverImg.onerror = tryNextCover;
+    coverImg.onload = () => { if (fallback) fallback.style.display='none'; };
+  }
+  if (heroImg) {
+    heroImg.onerror = function(){ this.style.opacity='0'; };
+  }
+  tryNextCover();
+
+  const favBtn = document.getElementById('modal-fav-btn');
+  if (favBtn) {
+    favBtn.textContent = book.fav ? '★ Remove Favorite' : '★ Favorite';
+  }
+
+  const modalBg = document.getElementById('modal');
+  if (modalBg) modalBg.classList.add('open');
+}
+
+window.openModal = openModal;
+
+function markStatus(btn,status){
+  const book=BOOKS.find(b=>b.isbn===curIsbn);
+  if(book){
+    book.s=status;
+    showToast(`Marked as ${status==='read'?'Read':status==='reading'?'Reading':'Want to Read'}`);
+    render();
+    document.getElementById('modal').classList.remove('open');
+  }
+}
+
+function markFav(btn){
+  const book=BOOKS.find(b=>b.isbn===curIsbn);
+  if(book){
+    book.fav=!book.fav;
+    showToast(book.fav?'Added to Favorites':'Removed from Favorites');
+    render();
+  }
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+function closeModal(e){if(e.target===document.getElementById('modal'))document.getElementById('modal').classList.remove('open')}
+
+function toggleSidebar(){const s=document.getElementById('sidebar');const o=document.getElementById('sidebar-backdrop');s.classList.toggle('open');o.classList.toggle('open',s.classList.contains('open'))}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-backdrop').classList.remove('open')}
+function setView(v,btn){
+  curView=v;
+  document.querySelectorAll('.vbtn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('view-covers').style.display=v==='covers'?'grid':'none';
+  document.getElementById('view-spines').style.display=v==='spines'?'flex':'none';
+  document.getElementById('view-shelf').style.display=v==='shelf'?'block':'none';
+  render();
+}
+
+function setStatus(s,el){
+  closeSidebar();
+  bmCollectionMode='all';
+  curStatus=s;
+  document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('topbar-title').textContent=s==='all'?'My Library':s==='reading'?'Reading Now':s==='tbr'?'Want to Read':'Read Books';
+  render();
+}
+
+function setCat(c,el){
+  closeSidebar();
+  bmCollectionMode='all';
+  curCat=c;
+  document.querySelectorAll('.fpill').forEach(i=>i.classList.remove('active'));
+  el.classList.add('active');
+  render();
+}
+
+function searchBooks(q){searchQ=q.toLowerCase();render()}
+function sortBooks(v){sortM=v;render()}
+function updateStats(){
+  const total=BOOKS.length;
+  const read=BOOKS.filter(b=>b.s==='read').length;
+  const reading=BOOKS.filter(b=>b.s==='reading').length;
+  const tbr=BOOKS.filter(b=>b.s==='tbr').length;
+  const pages=BOOKS.filter(b=>b.s==='read').reduce((sum,b)=>sum+b.p,0);
+
+  document.getElementById('stat-total').innerHTML=`${total} <span class="stat-icon">📚</span>`;
+  document.getElementById('stat-read').innerHTML=`${read} <span class="stat-icon">📖</span>`;
+  document.getElementById('stat-reading').innerHTML=`${reading} <span class="stat-icon">📖</span>`;
+  document.getElementById('stat-tbr').innerHTML=`${tbr} <span class="stat-icon">🔖</span>`;
+  document.getElementById('stat-pages').innerHTML=`${pages.toLocaleString()} <span class="stat-icon">📄</span>`;
+  document.getElementById('badge-total').textContent=total;
+  document.getElementById('badge-reading').textContent=reading;
+  document.getElementById('user-stats').textContent=`${total} books`;
+}
+
+function render(){
+  updateStats();
+  if(curView==='covers') renderCovers();
+  else if(curView==='spines') renderSpines();
+  else renderShelf();
+}
+
+function toggleChat(){document.getElementById('chat-window').classList.toggle('open')}
+function sendMessage(){
+  const input=document.getElementById('chat-input');
+  const msg=input.value.trim();
+  if(!msg) return;
+  const msgEl=document.getElementById('chat-messages');
+  const userMsg=document.createElement('div');
+  userMsg.className='chat-msg user';
+  userMsg.innerHTML=`<div class="text">${msg}</div>`;
+  msgEl.appendChild(userMsg);
+  input.value='';
+  setTimeout(()=>{
+    const responses=["Great question! 📚","I love your taste in books!","That's awesome! 🎉","Tell me more! 📖"];
+    const botMsg=document.createElement('div');
+    botMsg.className='chat-msg bot';
+    botMsg.innerHTML=`<div class="text">${responses[Math.floor(Math.random()*responses.length)]}</div>`;
+    msgEl.appendChild(botMsg);
+    msgEl.scrollTop=msgEl.scrollHeight;
+  },500);
+  msgEl.scrollTop=msgEl.scrollHeight;
+}
+
+setTimeout(()=>{
+  const msgEl=document.getElementById('chat-messages');
+  const greeting=document.createElement('div');
+  greeting.className='chat-msg bot';
+  greeting.innerHTML=`<div class="text">👋 Hi! Ask me anything about your books! 📚</div>`;
+  msgEl.appendChild(greeting);
+},300);
+
+render();
+
+/* ===== Comprehensive Content & Enhancement Layer ===== */
+(function(){
+  'use strict';
+  const STORE='bookmark-stable-v4';
+  let readerChapters=[];
+  let readerIndex=0;
+  let readerFont=18;
+  let readerTheme='parchment';
+  let readerBookIsbn='';
+  let speechActive=false;
+
+  // Specific, comprehensive metadata for ALL 46 BOOKS
+  const META={
+    'Fourth Wing':{short:'Violet Sorrengail is forced into the lethal Riders Quadrant at Basgiath War College, where dragons don’t bind to fragile humans—they burn them.',detailed:'Twenty-year-old Violet Sorrengail expected to enter the quiet Scribe Quadrant. However, her formidable mother orders her to join the deadly Dragon Riders. In a college where ruthless cadences and lethal trials weed out the weak, Violet relies on her intellect to survive. Her dangerous attraction to Xaden Riorson, a wing leader whose family led a rebellion, complicates her struggle as Navarre’s protective wards begin to fail.',themes:['Survival and inner strength','Bonding with mythic creatures','Loyalty versus rebellion','Trust in a world of deception'],characters:['Violet Sorrengail — intelligent and resilient protagonist','Xaden Riorson — lethal wingleader with shadow magic','Tairn — ancient, powerful black dragon bonded to Violet','Dain Aetos — protective childhood friend and squad leader'],aspects:['Military dragon college','Bond magic and signets','High-stakes war politics','Enemies-to-lovers dynamic']},
+    'A Court of Thorns and Roses':{short:'Feyre Archeron, a human huntress, kills a wolf in the woods and is dragged into the faerie realm of Prythian as punishment.',detailed:'To save her starving family, Feyre hunts in the treacherous winter forest and slays a monstrous wolf. In retribution, a lethal Fae High Lord named Tamlin claims her life and brings her to his estate in Spring Court. As hostility turns to passion, Feyre discovers a dark curse sweeping the Fae lands that only a human heart can break.',themes:['Sacrifice for family','Transformation through hardship','Beauty hidden beneath monstrosity','Freedom and autonomy'],characters:['Feyre Archeron — mortal hunter turned Fae savior','Tamlin — High Lord of the Spring Court','Rhysand — mysterious and dangerous High Lord of Night','Lucien — loyal ambassador of Spring'],aspects:['Fairytale retelling (Beauty & the Beast)','Fae court politics','Curse-breaking quest','Mortal and immortal tension']},
+    'Iron Flame':{short:'Violet Sorrengail survives her first year at Basgiath, but the real war has only just begun as secrets of Navarre unfold.',detailed:'Everyone expected Violet to die during her first year at Basgiath War College—including Violet herself. But threshing was only the first test. Now the real training begins, and Violet faces an arduous journey into secret outposts, unearthing ancient gryphon riders, hidden wards, and devastating secrets that her own government has suppressed for centuries.',themes:['Resilience against betrayal','The weight of leadership','Uncovering historical truth','Sacrifice in wartime'],characters:['Violet Sorrengail — rider possessing lightning signet','Xaden Riorson — leader of the secret resistance','Andarna — unique feather-tail dragon evolving with age','General Sorrengail — Violet’s severe mother and strategist'],aspects:['Revolutionary warfare','Expanded magic lore','High-tension military training','Deepening relationship stakes']},
+    'The Name of the Wind':{short:'Kvothe, a legendary wizard and musician, tells his own life story from a tavern corner to a traveling chronicler.',detailed:'Living incognito as a humble innkeeper named Kote, Kvothe recounts his legendary youth to the Chronicler over three days. Orphaned when the mythical Chandrian slaughter his troupe of edema ruh performers, Kvothe survives as a beggar in Tarbean before earning entry into the prestigious University to study sympathy magic and search for answers.',themes:['The power of storytelling','Grief and vengeance','Pursuit of forbidden knowledge','Music and true naming'],characters:['Kvothe — gifted musician, arcanist, and adventurer','Denna — elusive, captivating woman Kvothe adores','Master Elodin — eccentric Master Namer at University','Bast — Kvothe’s fae companion and student'],aspects:['Frame narrative structure','Detailed academic magic system','Tragic hero journey','Rich musical atmosphere']},
+    'Dune':{short:'Young Paul Atreides navigates betrayal, desert survival, and messianic destiny on the dangerous spice planet Arrakis.',detailed:'Duke Leto Atreides takes stewardship of Arrakis, the sole universe source of the invaluable spice melange. Trapped in a deadly conspiracy by House Harkonnen and the Emperor, Paul and his mother Lady Jessica escape into the harsh desert among the Fremen. Paul learns the desert ways, unleashes his prophetic powers, and leads a revolution.',themes:['Ecology and spice control','Messianic myth and prophecy','Political maneuvering','Human adaptability'],characters:['Paul Atreides — young noble who becomes Muad\'Dib','Lady Jessica — Bene Gesserit mother of Paul','Baron Harkonnen — ruthless and cunning antagonist','Chani — Fremen warrior woman and Paul’s love'],aspects:['Desert world-building','Space feudalism','Precognition and Bene Gesserit magic','Ecosystem transformation']},
+    'Six of Crows':{short:'Six dangerous outcasts attempt an impossible heist into the ice court of Fjerda for a massive score.',detailed:'Criminal prodigy Kaz Brekker is offered a chance at deadly wealth: break into the impenetrable Ice Court and rescue the creator of jurda parem, a drug that exponentially enhances Grisha powers. Kaz assembles a crew of six misfits, each with specialized skills and dark secrets, to pull off the ultimate heist.',themes:['Found family among outcasts','Trauma and revenge','Greed versus loyalty','Clever schemes and heists'],characters:['Kaz Brekker — mastermind known as Dirtyhands','Inej Ghafa — agile spy called the Wraith','Jesper Fahey — sharpshooter with a gambling habit','Nina Zenik — Heartrender Grisha with a big heart'],aspects:['Gothic heist narrative','Intricate urban world','Grisha magic system','High-stakes crew dynamics']},
+    'The Cruel Prince':{short:'Mortal Jude Duarte fights for power and survival in the treacherous, deceptive Court of Elfhame.',detailed:'Stolen away to Elfhame as a child after her parents were murdered, Jude Duarte longs to belong despite being a mortal despised by Fae. To earn a place at court, she becomes a spy for Prince Dain and enters a dangerous game of intrigue against Prince Cardan, her cruel and arrogant classmate.',themes:['Ambition and power','Belonging and mortal mortality','Deception and courtly intrigue','Enemies becoming allies'],characters:['Jude Duarte — ambitious human spy and strategist','Prince Cardan — cruel, charismatic Fae prince','Taryn Duarte — Jude’s twin sister seeking safety','Madoc — warlord who killed Jude’s parents and raised her'],aspects:['High Fae politics','Mortal vulnerabilities','Wicked court intrigue','Rivalry and power plays']},
+    'Project Hail Mary':{short:'Ryland Grace wakes up alone on a spaceship with amnesia, realizing he is humanity’s last hope to save Earth from extinction.',detailed:'Ryland Grace is the sole survivor on a desperate interstellar mission to the Tau Ceti star system. A micro-organism named Astrophage is draining the Sun’s energy, threatening a global ice age. Through scientific problem-solving and an unexpected friendship with an alien engineer named Rocky, Ryland works to reverse the crisis.',themes:['Scientific ingenuity','Unlikely interstellar friendship','Selflessness and duty','Will to survive'],characters:['Ryland Grace — junior high science teacher turned astronaut','Rocky — spider-like alien engineer from Erid','Eva Stratt — formidable leader of the Hail Mary project'],aspects:['Hard science problem solving','First contact interaction','Space survival story','Humorous narrative tone']},
+    'The Night Circus':{short:'Two young magicians are bound into a deadly duel of illusion and enchantment within a magical black-and-white circus.',detailed:'Le Cirque des Rêves arrives without warning, opening only at night with ethereal tents. Unbeknownst to the performers, the circus is the arena for a lifelong contest between Celia and Marco, two illusionists trained since childhood. As their magic intertwines, they fall in love, unaware that the game can only end with one survivor.',themes:['Love versus destiny','Artistry and enchantment','Consequences of rivalry','Timeless magic'],characters:['Celia Bowen — gifted illusionist who manipulates physical reality','Marco Alisdair — scholar magician working from afar','Chandresh Lefèvre — eccentric circus creator','Isobel Martin — fortune teller and former confidante'],aspects:['Atmospheric prose','Aesthetic black-and-white imagery','Non-linear narrative','Enchanted circus setting']},
+    'Circe':{short:'The banished witch Circe transforms from a quiet nymph into a formidable sorceress on her isolated island of Aiaia.',detailed:'Daughter of the sun god Helios, Circe is mocked for her soft voice and lack of power. When she discovers her talent for pharmakeia (herb magic), the gods banish her to Aiaia. Over centuries, Circe hones her craft, encounters iconic figures like Daedalus, the Minotaur, Medea, and Odysseus, and claims her own independence.',themes:['Self-actualization and autonomy','Immortal isolation','Motherhood and sacrifice','Defying patriarchal gods'],characters:['Circe — witch of Aiaia and goddess of magic','Helios — proud Titan god of the sun','Odysseus — legendary cunning hero who visits her island','Telegonus — Circe’s fiercely protected son'],aspects:['Mythological feminist retelling','Solo island transformation','Greek pantheon lore','Epic timeline']},
+    'The Way of Kings':{short:'On the storm-swept world of Roshar, three individuals grapple with war, honor, and ancient Knights Radiant magic.',detailed:'Roshar is a world torn by highstorms and endless war on the Shattered Plains. Kaladin, a former surgeon turned enslaved bridge-runner, struggles to keep his men alive. Highprince Dalinar Kholin experiences visions of ancient radiant knights, while Shallan Davar seeks to steal a soulcaster to save her house.',themes:['Honor and responsibility','Overcoming despair','Ancient oaths and magic','Sacrifice in war'],characters:['Kaladin Stormblessed — bridge leader bonded with Syl','Dalinar Kholin — honorable highprince haunted by visions','Shallan Davar — young scholar and lightweaver','Szeth-son-son-Vallano — reluctant Assassin in White'],aspects:['Epic high fantasy','Storm-powered magic system','Complex world ecosystems','Interlocking plotlines']},
+    'Mistborn':{short:'A street thief named Vin discovers she is a Mistborn and joins a crew aiming to overthrow an immortal tyrant.',detailed:'For a thousand years, ash has fallen and Skaa have been enslaved under the Lord Ruler’s immortal reign. Kelsier, a legendary survivor of the Pits of Hathsin, recruits street urchin Vin into a rebellion. Using Allomancy—magic powered by swallowing and burning metals—they plan to pull off the ultimate revolution.',themes:['Hope against tyranny','Trust and belonging','The cost of revolution','Magic rooted in metal'],characters:['Vin — young Skaa thief who becomes a master Mistborn','Kelsier — charismatic leader of the rebellion','The Lord Ruler — god-king ruler of the Final Empire','Sazed — Terris keeper who preserves forbidden knowledge'],aspects:['Allomancy magic system','Heist-style rebellion','Dystopian fantasy empire','Twisting plot reveals']},
+    '1984':{short:'Winston Smith secretly rebels against the totalitarian Party and Big Brother in Oceania’s surveillance state.',detailed:'In a bleak world where Thought Police monitor every move, language is rewritten into Newspeak, and history is constantly altered, Winston Smith works at the Ministry of Truth. He begins writing a secret diary and starts a forbidden love affair with Julia, seeking freedom in a world without privacy.',themes:['Totalitarian control','Destruction of truth','Loss of individual identity','Omnipresent surveillance'],characters:['Winston Smith — low-ranking Party member seeking truth','Julia — pragmatic rebel who loves Winston','O’Brien — enigmatic inner party official','Big Brother — figurehead leader of the Party'],aspects:['Dystopian classics','Thoughtcrime and Newspeak','Psychological oppression','Chilling social commentary']},
+    'Brave New World':{short:'In a technologically engineered utopia, human beings are mass-produced, conditioned, and kept docile through pleasure.',detailed:'The World State achieves stability by eliminating disease, war, and grief through genetic engineering, sleep-learning, and the feel-good drug Soma. When Bernard Marx brings "Savage" John from a natural reservation into society, John’s moral outrage exposes the empty nature of artificial happiness.',themes:['Happiness versus freedom','Genetic conditioning','Commercial consumerism','Loss of genuine emotion'],characters:['Bernard Marx — outsider alpha who questions society','John the Savage — raised outside the World State','Lenina Crowne — typical conditioned citizen','Mustapha Mond — Resident World Controller'],aspects:['Futuristic bio-engineering','Satirical utopia','Philosophical debate','Loss of individuality']},
+    'The Handmaid\'s Tale':{short:'In the totalitarian Republic of Gilead, Offred is forced into reproductive servitude under a fundamentalist regime.',detailed:'Following environmental disasters and plummeting birth rates, a military coup overthrows the US government and establishes Gilead. Women are stripped of rights, and fertile women called Handmaids are assigned to Commanders to bear children. Offred remembers her past freedom while navigating silent survival.',themes:['Reproductive autonomy','Religious extremism','Memory as resistance','Silent female solidarity'],characters:['Offred — Handmaid recording her quiet memories','The Commander — high-ranking Gilead official','Serena Joy — Commander’s bitter, devout wife','Moira — Offred’s fiercely rebellious friend'],aspects:['Speculative dystopian fiction','First-person internal monologue','Chilling political parable','Subversive resistance']},
+    'Pride and Prejudice':{short:'Elizabeth Bennet and Mr. Darcy navigate family antics, pride, and hasty judgments in Regency England.',detailed:'Mrs. Bennet is desperate to marry off her five daughters. When wealthy Mr. Bingley moves nearby, his proud friend Mr. Darcy antagonizes the spirited Elizabeth Bennet. Through clever banter, family scandals, and personal growth, both Elizabeth and Darcy overcome their initial biases to find real love.',themes:['Pride and quick judgment','Social class and marriage','Family expectations','Wit and self-awareness'],characters:['Elizabeth Bennet — quick-witted heroine','Fitzwilliam Darcy — proud, wealthy gentleman','Jane Bennet — Elizabeth’s sweet elder sister','Mr. Wickham — charming but deceptive officer'],aspects:['Regency romantic comedy','Satirical social commentary','Classic spark dialogue','Character arc transformation']},
+    'Ender\'s Game':{short:'Child prodigy Ender Wiggin is recruited into an elite orbital Battle School to prepare for an alien invasion.',detailed:'Humanity prepares for a third invasion by the insectoid "Formics." Young Ender Wiggin is monitored and drafted into Battle School, where commanders push him through intense zero-gravity tactical games to mold him into the ultimate military commander.',themes:['Isolation of leadership','Empathy versus destruction','Ethics of child warfare','Game versus reality'],characters:['Ender Wiggin — brilliant, compassionate tactical genius','Colonel Graff — director of Battle School training','Valentine Wiggin — Ender’s protective sister','Peter Wiggin — Ender’s ruthless older brother'],aspects:['Military science fiction','Zero-G battle room tactics','Psychological warfare','Iconic plot twist']},
+    'The Martian':{short:'Stranded alone on Mars after a storm, astronaut Mark Watney uses science to survive against all odds.',detailed:'During an evacuation storm on Mars, astronaut Mark Watney is struck by debris and presumed dead. Left behind alone on the desolate planet with limited supplies, Mark relies on his botanical knowledge and engineering skills to grow food, create water, and communicate with NASA.',themes:['Human ingenuity and science','Unwavering optimism','Global solidarity','Survival against nature'],characters:['Mark Watney — hilarious, resourceful astronaut botanist','Teddy Sanders — cautious administrator of NASA','Annie Montrose — director of NASA media relations','Melissa Lewis — commander of the Ares 3 mission'],aspects:['Realistic hard science','Log-format storytelling','Humorous survival narrative','Engineering problem solving']},
+    'Ready Player One':{short:'In a dystopian 2045, teenager Wade Watts enters a virtual reality treasure hunt for control of the OASIS.',detailed:'When creator James Halliday dies, he leaves his vast fortune and control of the OASIS—a massive virtual world—to whoever can solve his 1980s pop-culture riddles and find three hidden keys. Wade Watts, avatar Parzival, competes against corporate conglomerate IOI in a high-stakes digital race.',themes:['Virtual escapism versus reality','Nostalgia and pop culture','Corporate greed versus freedom','Friendship across distance'],characters:['Wade Watts / Parzival — young egg hunter protagonist','Samantha Cook / Art3mis — skilled gunter and rival','Nolan Sorrento — ruthless IOI corporate executive','James Halliday — eccentric creator of the OASIS'],aspects:['80s arcade nostalgia','VR universe exploration','Virtual egg hunt quest','Cyberpunk adventure']},
+    'The Hobbit':{short:'Comfort-loving Bilbo Baggins is dragged on an epic quest to reclaim the Dwarf kingdom from the dragon Smaug.',detailed:'Bilbo Baggins leads a quiet life in Hobbiton until wizard Gandalf and thirteen dwarves led by Thorin Oakenshield recruit him as their "burglar." Journeying past trolls, goblins, elves, and a creepy ring-bearer named Gollum, Bilbo discovers courage he never knew he possessed.',themes:['Courage in ordinary people','Greed versus fellowship','Growth through adventure','Friendship and honor'],characters:['Bilbo Baggins — humble hobbit turned courageous burglar','Gandalf — wise wandering wizard','Thorin Oakenshield — proud dwarf king seeking his home','Smaug — cunning, fire-breathing gold hoard dragon'],aspects:['Classic high fantasy adventure','Riddles in the dark','Folk mythology charm','Epic journey structure']},
+    'The Secret History':{short:'A close-knit group of classics students at a New England college cross moral boundaries with tragic consequences.',detailed:'Transfer student Richard Papen joins an exclusive group of six classics students studying under charismatic professor Julian Morrow. Their obsession with ancient Greek rites leads them to perform a bacchanal that ends in accidental murder—and a subsequent deliberate killing to cover it up.',themes:['Obsession with beauty','Moral degradation','Guilt and paranoia','Elitism and isolation'],characters:['Richard Papen — narrator craving belonging','Henry Winter — brilliant, cold mastermind of the group','Bunny Corcoran — loud, blackmailing classmate','Julian Morrow — refined, aloof classics professor'],aspects:['Dark academia genre pioneer','Inverted detective mystery','Greek tragedy resonance','Atmospheric psychological thriller']},
+    'The Girl with the Dragon Tattoo':{short:'Disgraced journalist Mikael Blomkvist and hacker Lisbeth Salander investigate a decades-old disappearance.',detailed:'Mikael Blomkvist is hired by industrialist Henrik Vanger to solve the mystery of his grandniece Harriet, who vanished 40 years ago from a family island. Blomkvist teams up with Lisbeth Salander, an intensely secretive, brilliant computer hacker, unearthing shocking family atrocities.',themes:['Justice for victims','Corruption and corporate crime','Trauma and revenge','Unlikely partnership'],characters:['Lisbeth Salander — brilliant punk hacker with past trauma','Mikael Blomkvist — investigative magazine journalist','Henrik Vanger — wealthy patriarch seeking closure','Harriet Vanger — woman whose disappearance sparked the quest'],aspects:['Nordic noir mystery','Digital hacking forensics','Cold case murder investigation','Dark psychological thriller']},
+    'Harry Potter and the Sorcerer\'s Stone':{short:'An orphaned boy discovers he is a wizard and attends Hogwarts School of Witchcraft and Wizardry.',detailed:'11-year-old Harry Potter lives under the stairs with his neglectful aunt and uncle. On his birthday, giant Hagrid reveals Harry’s wizard heritage. At Hogwarts, Harry makes true friends, learns magic, and uncovers a mystery surrounding an alchemy stone that his parents\' killer seeks.',themes:['Friendship and loyalty','Good versus evil','Choice versus destiny','Magic in the mundane'],characters:['Harry Potter — The Boy Who Lived','Ron Weasley — loyal, warm-hearted wizard friend','Hermione Granger — brilliantly smart witch','Albus Dumbledore — wise headmaster of Hogwarts'],aspects:['Magical school boarding story','Whimsical world-building','Mystery adventure plot','Iconic fantasy coming-of-age']},
+    'The Notebook':{short:'An elderly man reads a romantic story from a notebook to a nursing home patient suffering from Alzheimer’s.',detailed:'In 1940s North Carolina, summer romance ignites between poor mill worker Noah Calhoun and wealthy heiress Allie Hamilton. Separated by Allie’s parents and World War II, their love burns bright when Allie visits Noah years later before her wedding, forcing a life-altering choice.',themes:['Enduring love over time','Memory and devotion','Social class barriers','Fate and soulmates'],characters:['Noah Calhoun — devoted, romantic coastal worker','Allie Hamilton — passionate artist and heiress','Lon Hammond — wealthy, respectable fiancé of Allie'],aspects:['Multi-timeline romance','Emotional tear-jerker','Southern coastal setting','Unconditional affection']},
+    'The Poppy War':{short:'Rin, a war orphan from the provinces, earns entry into Nikara’s top military academy and unlocks shamanic flame magic.',detailed:'Determined to escape forced marriage, orphan Rin studies relentlessly to pass the Keju test, earning a spot at elite Sinegard Academy. When war erupts between the Nikara Empire and the Mugen Federation, Rin discovers she can summon the deadly Phoenix god, forcing moral choices in total war.',themes:['Cost of war and revenge','Shamanism and gods','Class discrimination','Decimating power'],characters:['Fang Runin (Rin) — fierce war orphan turned phoenix shaman','Jiang Ziya — eccentric Lore Master at Sinegard','Altan Trengsin — last Speerly and commander of the Cike'],aspects:['Grimdark Asian fantasy','Historical inspiration (20th century China)','Brutal war realism','God-summoning magic']},
+    'Piranesi':{short:'Piranesi lives in "The House"—an infinite labyrinth of hall after hall filled with thousands of statues and ocean tides.',detailed:'Piranesi records meticulous entries about the tides and statues of his vast world, believing only two people exist: himself and "The Other." As Piranesi searches for secret knowledge with The Other, strange evidence reveals another visitor and hints that his beloved world might be something else entirely.',themes:['Innocence and wonder','Solitude versus isolation','The sacredness of creation','Memory and identity'],characters:['Piranesi — gentle, observant inhabitant of the House','The Other — polished researcher visiting twice a week','The Prophet (Arun Arneurus) — shadowy figure behind secrets'],aspects:['Surreal architectural fantasy','Epistolary journal format','Ethereal atmosphere','Gentle philosophical mystery']},
+    'The Invisible Life of Addie LaRue':{short:'A French woman makes a bargain for immortality in 1714, but is cursed to be forgotten by everyone she meets.',detailed:'Desperate to escape a forced marriage, Addie LaRue makes a Faustian deal with a darkness god: eternal freedom and life, but no one can remember her. For 300 years, she lives as a ghost in history until she walks into a bookstore and a young man utters three words: "I remember you."',themes:['Leaving a mark on history','Memory and love','The cost of freedom','Art as immortality'],characters:['Addie LaRue — cursed immortal woman seeking memory','Luc — dark, charismatic god who granted her wish','Henry Strauss — quiet bookseller who remembers her'],aspects:['Dual-timeline narrative','Faustian curse story','Artistic legacy theme','Deeply romantic fantasy']},
+    'Atomic Habits':{short:'James Clear presents a proven framework for improving every day through small, incremental habit changes.',detailed:'Small 1% improvements compound over time into massive personal transformations. James Clear breaks down habit formation into Four Laws: Make it Obvious, Make it Attractive, Make it Easy, and Make it Satisfying, showing how environment and identity shape long-term success.',themes:['Systems over goals','Identity-based habits','Compound interest of self-improvement','Environmental design'],characters:['James Clear — author and habit researcher'],aspects:['Practical behavioral psychology','Actionable productivity rules','Clear habit loop diagrams','Real-world case studies']},
+    'Sapiens':{short:'Yuval Noah Harari explores the brief history of humankind, from early foraging hominids to global dominance.',detailed:'Harari sweeps through 70,000 years of human history, focusing on three major revolutions: Cognitive (creating shared fiction like money and religion), Agricultural (farming and domesticating), and Scientific (technological expansion). He examines how belief systems allowed Homo sapiens to cooperate at scale.',themes:['Shared human fictions','Evolutionary tradeoffs','Cognitive revolution','Power versus happiness'],characters:['Yuval Noah Harari — historian and philosopher'],aspects:['Macro-historical analysis','Provocative social theory','Scientific synthesis','Accessible narrative style']},
+    'The Atlas Six':{short:'Six extraordinary Alexandrians compete for five spots in a secret society guarding humanity’s lost magical knowledge.',detailed:'Every decade, the Alexandrian Society selects six unique magicians to study the secrets of antiquity. Guided by Atlas Blakely, the candidates—Libby, Nico, Reina, Parisa, Tristan, and Callum—must spend a year researching together, knowing that one candidate will be sacrificed at the end of the term.',themes:['Ambition versus ethics','Academic rivalry and power','Knowledge as weapon','Sacrifice for greatness'],characters:['Libby Rhodes — disciplined magician with molecular control','Nico de Varona — powerful rival controller of matter','Parisa Kamali — telepathic siren reading minds','Atlas Blakely — mysterious caretaker of the Society'],aspects:['Dark academia secret society','Complex psychological play','Morally grey magicians','Intricate magic theory']},
+    'Red Rising':{short:'Darrow, a low-caste miner on Mars, infiltrates the ruling Gold class to bring down the color-coded tyranny.',detailed:'Darrow is a Helldiver working in the subterranean mines of Mars, believing his labor prepares the planet for future generations. When his wife Eo is executed, Darrow learns Golds have lived in luxury above for centuries. Joined with rebels, Darrow undergoes surgical transformation into a Gold to destroy the Society from within.',themes:['Revolution and vengeance','Class hierarchy breaking','Sacrifice for hope','Brutal martial honor'],characters:['Darrow of Lykos — Red miner transformed into Gold leader','Eo — Darrow’s martyr wife whose song sparks rebellion','Cassius au Bellona — proud Gold rival and friend','Sevtus au Barca (Goblin) — loyal feral strategist'],aspects:['Space-opera dystopian war','Roman-inspired Gold caste','Institute survival games','High-octane action']},
+    'Legendborn':{short:'Bree Matthews discovers an ancient secret society of King Arthur’s descendants after her mother’s death.',detailed:'16-year-old Bree enters an early college program at UNC Chapel Hill after losing her mother. When she witnesses a demon attack on campus, she encounters the Legendborn, a secret society descended from Arthurian knights. Unlocking her own hidden roots, Bree enters their tournament to discover the truth.',themes:['Grief and ancestral power','Arthurian legend reimagined','Southern history and race','Self-discovery'],characters:['Bree Matthews — powerful heroine wielding ancestral rootcraft','Nick Sorrel — charismatic Scion of Arthur','Selwyn Kane — lethal Merlin mage who distrusts Bree'],aspects:['Modern Arthurian retelling','Root magic and Scion magic','University campus setting','High-stakes demon battles']},
+    'The Priory of the Orange Tree':{short:'An unwed queen, a dragon rider, a mage, and an outsider must unite to save a divided world from an ancient evil.',detailed:'The East and West have been divided for centuries over dragons. In the West, Queen Sabran IX must produce an heir to keep her realm safe from the Nameless One. Ead Duryan, a hidden mage, guards her secretly. In the East, dragon rider Tané trains for her dream, as ancient forces awaken across oceans.',themes:['Unity across divides','Female sovereignty','Dragons as gods and monsters','Ancient mythic threats'],characters:['Ead Duryan — secret priory mage protecting Queen Sabran','Sabran IX — Queen of Inys under religious pressure','Tané — eastern dragon rider candidate','Loth — exiled nobleman navigating diplomat trials'],aspects:['Epic standalone fantasy','Dual dragon mythologies','Queer romantic court politics','Sweeping world building']},
+    'Throne of Glass':{short:'An eighteen-year-old assassin is offered her freedom if she wins a lethal tournament in the king’s castle.',detailed:'Celaena Sardothien, Adarlan’s most dangerous assassin, is rescued from the slave mines of Endovier by Crown Prince Dorian. In exchange for her freedom, she must compete against royal champions in a castle tournament. As competitors die mysteriously, Celaena discovers dark magic lurking in the glass castle.',themes:['Freedom and identity','Resilience through trauma','Secrets of lost magic','Courage under tyranny'],characters:['Celaena Sardothien — deadly assassin with a love for luxury','Prince Dorian Havilliard — charismatic crown prince','Chaol Westfall — stern Captain of the Guard'],aspects:['Deadly royal competition','Ancient court secrets','Strong female lead','Growing high fantasy series']},
+    'Shatter Me':{short:'Juliette’s touch is lethal. Locked in a cell by The Reestablishment, she is weaponized for total control.',detailed:'Juliette hasn\'t touched anyone in 264 days because her touch can kill. The Reestablishment views her as a weapon and locks her away until Warner, sector leader, decides to use her to crush resistance. When Juliette re-encounters childhood friend Adam, she fights to escape and control her power.',themes:['Acceptance of self','Touch and human connection','Rebellion against tyranny','Overcoming isolation'],characters:['Juliette Ferrars — girl with deadly touch','Aaron Warner — obsession-driven sector commander','Adam Kent — soldier who can withstand Juliette’s touch'],aspects:['Poetic internal narration','Dystopian superpower fiction','Strikethrough poetic prose','Rival lover dynamics']},
+    'The Starless Sea':{short:'Zachary Ezra Rawlins discovers a mysterious book containing a story from his own childhood, leading to a subterranean library.',detailed:'Graduate student Zachary finds an uncataloged book in his university library recounting an exact scene from his youth where he hesitated to open a painted door. Following clues of bees, keys, and swords, he discovers an underground sanctuary of stories located on the shores of the Starless Sea.',themes:['Love for stories and myth','Destiny and doors','Preserving magic','Romantic mystery'],characters:['Zachary Ezra Rawlins — story-obsessed graduate student','Dorian — handsome, mysterious keeper of secrets','Mirabel — painter of magical doors'],aspects:['Labyrinth underground library','Story within a story','Atmospheric lyrical prose','Enchanted secret societies']},
+    'Jane Eyre':{short:'Orphaned Jane Eyre survives harsh schooling to become a governess at Thornfield Hall, falling for dark Mr. Rochester.',detailed:'After surviving abuse at Gateshead and harsh conditions at Lowood School, independent Jane Eyre takes a governess post at Thornfield Hall. She falls deeply for her brooding employer, Edward Rochester, but on their wedding day, a shocking secret hidden in the attic threatens her moral principles.',themes:['Independence and self-respect','Moral integrity versus passion','Social class and gender','Gothic mystery'],characters:['Jane Eyre — fiercely independent orphan governess','Edward Rochester — brooding master of Thornfield','Bertha Mason — hidden wife in the attic','St. John Rivers — austere clergyman cousin'],aspects:['Gothic Victorian romance','First-person emotional narrative','Moral redemption story','Classic literature icon']},
+    'The Hitchhiker\'s Guide':{short:'Arthur Dent is rescued from Earth\'s destruction seconds before a Vogon highway demolishes the planet.',detailed:'Seconds before Earth is destroyed to make way for a hyperspace bypass, mild-mannered Englishman Arthur Dent is plucked into space by his friend Ford Prefect, a researcher for The Hitchhiker\'s Guide to the Galaxy. Travelling with galactic president Zaphod Beeblebrox and depressed robot Marvin, Arthur seeks ultimate answers.',themes:['Absurdity of existence','Humor in disaster','Don\'t Panic principle','Search for cosmic meaning'],characters:['Arthur Dent — bewildered tea-loving human survivor','Ford Prefect — alien field researcher for the Guide','Zaphod Beeblebrox — two-headed ex-President of Galaxy','Marvin — chronically depressed paranoid android'],aspects:['Sci-fi satire comedy','42 answer to life','Cosmic absurd humor','Iconic British sci-fi']},
+    'Foundation':{short:'Psychohistorian Hari Seldon predicts the galactic empire\'s fall and creates a preserve to shorten the dark ages.',detailed:'Mathematics professor Hari Seldon uses psychohistory—a science blending history, sociology, and statistics—to calculate that the Galactic Empire will collapse into 30,000 years of dark ages. Seldon establishes the Foundation on remote planet Terminus to compile the Encyclopedia Galactica and shorten the darkness to 1,000 years.',themes:['Predictive historical science','Rise and fall of empires','Brain over brawn','Long-term civilization preservation'],characters:['Hari Seldon — creator of psychohistory','Salvor Hardin — first mayor of Terminus','Hober Mallow — master trader and political strategist'],aspects:['Grand scale hard sci-fi','Multi-generational structure','Political intelligence over violence','Classic sci-fi masterwork']},
+    'Neuromancer':{short:'Washed-up console cowboy Case is hired for a dangerous cyberspace heist by a shadowy employer.',detailed:'Case was once a top hacker in Chiba City before his central nervous system was burned by poison as punishment for stealing. Shadowy ex-soldier Armitage hires Case, offering a neural repair in exchange for hacking an advanced Artificial Intelligence named Wintermute alongside razor-girl Molly Millions.',themes:['Humanity in machine era','Cyberspace and virtual reality','Corporate rule','Body modification'],characters:['Henry Case — burned-out cyberspace hacker','Molly Millions — augmented street samurai razor-girl','Armitage — mysterious agent with a fractured mind','Wintermute — powerful AI seeking consciousness'],aspects:['Cyberpunk genre pioneer','Matrix cyberspace vision','Neo-Noir aesthetic','High-tech low-life setting']},
+    'Snow Crash':{short:'Hiro Protagonist, pizza delivery driver in real life and warrior prince in the Metaverse, investigates a digital virus.',detailed:'In a fragmented future where corporations rule independent burbclaves, Hiro Protagonist delivers pizzas for the Mafia and codes for the Metaverse. When a new drug/virus named Snow Crash begins infecting hackers in virtual space and crashing their physical brains, Hiro and skateboard courier Y.T. race to stop it.',themes:['Digital versus physical reality','Linguistic programming','Corporate feudalism','Information warfare'],characters:['Hiro Protagonist — hacker and Metaverse swordsman','Y.T. (Yours Truly) — fearless teenage skateboard courier','Raven — lethal Aleut harpoon-wielding mercenary'],aspects:['Cyberpunk satire','Metaverse origins','Sumerian myth linguistic theory','Fast-paced action thriller']},
+    'Wuthering Heights':{short:'The turbulent, vengeful passion between Heathcliff and Catherine Earnshaw destroys lives on the Yorkshire moors.',detailed:'Found as an orphan on Liverpool streets, Heathcliff is raised at Wuthering Heights. He develops a wild, obsessive bond with Catherine Earnshaw. When Catherine marries wealthy Edgar Linton for status, Heathcliff embarks on a multi-generational revenge plan against everyone who degraded him.',themes:['Obsessive destructive passion','Revenge across generations','Class cruelty','Gothic moors landscape'],characters:['Heathcliff — dark, vengeful anti-hero','Catherine Earnshaw — passionate, divided spirit','Nelly Dean — observant housekeeper storyteller','Edgar Linton — refined, gentle master of Thrushcross Grange'],aspects:['Victorian Gothic tragedy','Nested narrative framing','Wild atmospheric moors','Dark anti-hero focus']},
+    'The Count of Monte Cristo':{short:'Edmond Dantès is framed on his wedding day, imprisoned for 14 years, and escapes to exact calculated retribution.',detailed:'On the eve of his marriage to Mercédès, young sailor Edmond Dantès is falsely accused of treason by jealous rivals and imprisoned in the Château d\'If. Mentored by Abbé Faria, Dantès escapes, discovers a vast treasure on Monte Cristo island, and adopts multiple personas to ruin his enemies.',themes:['Justice versus revenge','Patience and divine providence','Transformation of self','Corrupting power of hatred'],characters:['Edmond Dantès — betrayed sailor turned Count of Monte Cristo','Mercédès — Edmond’s former fiancée','Abbé Faria — wise prisoner priest and mentor','Fernand Mondego — jealous rival who framed Edmond'],aspects:['Ultimate revenge saga','Master of disguises','Grand 19th-century epic','Intricate plot revenge']},
+    'And Then There Were None':{short:'Ten strangers are invited to an isolated island home and are murdered one by one according to a nursery rhyme.',detailed:'Ten people with dark past secrets are lured to an island mansion off the Devon coast by an unseen host. Upon arrival, a recorded voice accuses each guest of unpunished murders. As storm clouds cut off the mainland, guests die one by one matching "Ten Little Soldier Boys."',themes:['Justice and guilt','Paranoia and isolation','Unpunished crimes','Psychological terror'],characters:['Justice Wargrave — retired stern judge','Vera Claythorne — former governess haunted by past death','Philip Lombard — mercenary soldier of fortune','Dr. Armstrong — anxious physician'],aspects:['Locked-room murder mystery','Ten little soldiers rhyme plot','Peak Agatha Christie thriller','Unsettling atmospheric tension']},
+    'Rebecca':{short:'A young bride moves to Manderley estate and is haunted by the lingering memory of her husband\'s first wife.',detailed:'A shy young companion meets wealthy widower Maxim de Winter in Monte Carlo and quickly marries him. Upon moving to his romantic Cornish estate, Manderley, she finds herself overshadowed by the lingering legend of Maxim\'s late wife Rebecca and intimidated by housekeeper Mrs. Danvers.',themes:['Shadow of the past','Jealousy and self-doubt','Gothic domestic secrets','Power dynamics'],characters:['The Second Mrs. de Winter — nameless young heroine','Maxim de Winter — brooding master of Manderley','Mrs. Danvers — sinister housekeeper obsessed with Rebecca','Rebecca — deceased first wife whose presence lingers'],aspects:['Gothic psychological thriller','Iconic opening line','Haunting estate atmosphere','Twisting murder reveal']},
+    'Misery':{short:'Famous novelist Paul Sheldon is rescued from a car crash by his "number one fan," who holds him hostage.',detailed:'Author Paul Sheldon crashes his car during a blizzard after finishing a novel that kills off his popular character Misery Chastain. He is rescued by nurse Annie Wilkes, who takes him to her remote home. When Annie reads his manuscript and discovers Misery dies, her fandom turns into brutal torture.',themes:['Fanaticism and obsession','Physical and mental confinement','Pain and artistic creation','Will to survive'],characters:['Paul Sheldon — bedridden author fighting for life','Annie Wilkes — former nurse, unstable fanatic kidnapper'],aspects:['Single-location psychological horror','Stephen King suspense icon','Terrifying character study','Writer survival story']}
+  };
+
+  // Local, offline public-domain demo reading edition.
+  // Text reproduced from Lewis Carroll's Alice's Adventures in Wonderland,
+  // Project Gutenberg eBook #11 (public domain in the United States).
+  const LOCAL_PUBLIC_DOMAIN_CHAPTERS=[
+    {roman:"I",title:"Down the Rabbit-Hole",text:"Alice was beginning to get very tired of sitting by her sister on the bank, and of having nothing to do: once or twice she had peeped into the book her sister was reading, but it had no pictures or conversations in it, “and what is the use of a book,” thought Alice “without pictures or conversations?”\n\nSo she was considering in her own mind (as well as she could, for the hot day made her feel very sleepy and stupid), whether the pleasure of making a daisy-chain would be worth the trouble of getting up and picking the daisies, when suddenly a White Rabbit with pink eyes ran close by her.\n\nThere was nothing so very remarkable in that; nor did Alice think it so very much out of the way to hear the Rabbit say to itself, “Oh dear! Oh dear! I shall be late!” but when the Rabbit actually took a watch out of its waistcoat-pocket, and looked at it, and then hurried on, Alice started to her feet, for it flashed across her mind that she had never before seen a rabbit with either a waistcoat-pocket, or a watch to take out of it, and burning with curiosity, she ran across the field after it.\n\nIn another moment down went Alice after it, never once considering how in the world she was to get out again.\n\nThe rabbit-hole went straight on like a tunnel for some way, and then dipped suddenly down, so suddenly that Alice had not a moment to think about stopping herself before she found herself falling down a very deep well.\n\nEither the well was very deep, or she fell very slowly, for she had plenty of time as she went down to look about her and to wonder what was going to happen next. First, she tried to look down and make out what she was coming to, but it was too dark to see anything; then she looked at the sides of the well, and noticed that they were filled with cupboards and book-shelves; here and there she saw maps and pictures hung upon pegs.\n\nShe took down a jar from one of the shelves as she passed; it was labelled “ORANGE MARMALADE”, but to her great disappointment it was empty: she did not like to drop the jar for fear of killing somebody underneath, so managed to put it into one of the cupboards as she fell past it.\n\nDown, down, down. Would the fall never come to an end? “I wonder how many miles I’ve fallen by this time?” she said aloud. “I must be getting somewhere near the centre of the earth.”\n\nPresently she began again. “I wonder if I shall fall right through the earth! How funny it’ll seem to come out among the people that walk with their heads downward!”\n\nDown, down, down. There was nothing else to do, so Alice soon began talking again. “Dinah’ll miss me very much to-night, I should think!” Dinah was the cat.\n\nShe felt that she was dozing off, and had just begun to dream that she was walking hand in hand with Dinah when suddenly, thump! thump! down she came upon a heap of sticks and dry leaves, and the fall was over.\n\nAlice was not a bit hurt, and she jumped up on to her feet in a moment: she looked up, but it was all dark overhead; before her was another long passage, and the White Rabbit was still in sight, hurrying down it.\n\nThere were doors all round the hall, but they were all locked; and when Alice had been all the way down one side and up the other, trying every door, she walked sadly down the middle, wondering how she was ever to get out again.\n\nSuddenly she came upon a little three-legged table, all made of solid glass; there was nothing on it except a tiny golden key, and Alice’s first thought was that it might belong to one of the doors of the hall.\n\nOn the second time round, she came upon a low curtain she had not noticed before, and behind it was a little door about fifteen inches high: she tried the little golden key in the lock, and to her great delight it fitted.\n\nAlice opened the door and found that it led into a small passage, not much larger than a rat-hole: she knelt down and looked along the passage into the loveliest garden you ever saw.\n\nThere seemed to be no use in waiting by the little door, so she went back to the table. This time she found a little bottle on it, and round the neck of the bottle was a paper label, with the words “DRINK ME,” beautifully printed on it in large letters.\n\nHowever, this bottle was not marked “poison,” so Alice ventured to taste it, and finding it very nice, she very soon finished it off.\n\n“What a curious feeling!” said Alice; “I must be shutting up like a telescope.”\n\nAnd so it was indeed: she was now only ten inches high, and her face brightened up at the thought that she was now the right size for going through the little door into that lovely garden.\n\nWhen she got to the door, she found she had forgotten the little golden key, and when she went back to the table for it, she found she could not possibly reach it.\n\nSoon her eye fell on a little glass box that was lying under the table: she opened it, and found in it a very small cake, on which the words “EAT ME” were beautifully marked in currants. “Well, I’ll eat it,” said Alice, “and if it makes me grow larger, I can reach the key; and if it makes me grow smaller, I can creep under the door; so either way I’ll get into the garden.”\n\nSo she set to work, and very soon finished off the cake."},
+    {roman:"II",title:"The Pool of Tears",text:"“Curiouser and curiouser!” cried Alice; “now I’m opening out like the largest telescope that ever was! Good-bye, feet!”\n\nPoor Alice! It was as much as she could do, lying down on one side, to look through into the garden with one eye; but to get through was more hopeless than ever: she sat down and began to cry again.\n\n“You ought to be ashamed of yourself,” said Alice, “a great girl like you, to go on crying in this way!” But she went on all the same, shedding gallons of tears, until there was a large pool all round her.\n\nAfter a time she heard a little pattering of feet in the distance, and she hastily dried her eyes to see what was coming.\n\nIt was the White Rabbit returning, splendidly dressed, with a pair of white kid gloves in one hand and a large fan in the other.\n\nAlice took up the fan and gloves, and, as the hall was very hot, she kept fanning herself all the time she went on talking: “Dear, dear! How queer everything is to-day! And yesterday things went on just as usual. I wonder if I’ve been changed in the night?”\n\n“But if I’m not the same, the next question is, Who in the world am I? Ah, that’s the great puzzle!”\n\nShe began thinking over all the children she knew that were of the same age as herself, to see if she could have been changed for any of them.\n\n“I’m sure I’m not Ada,” she said, “and I’m sure I can’t be Mabel, for I know all sorts of things, and she, oh! she knows such a very little! Besides, she’s she, and I’m I, and—oh dear, how puzzling it all is!”\n\nAs she said this she looked down at her hands, and was surprised to see that she had put on one of the Rabbit’s little white kid gloves while she was talking.\n\n“I must be growing small again.” She got up and went to the table to measure herself by it, and found that she was now about two feet high, and was going on shrinking rapidly.\n\n“That was a narrow escape!” said Alice, a good deal frightened at the sudden change, but very glad to find herself still in existence; “and now for the garden!”\n\nAs she said these words her foot slipped, and in another moment, splash! she was up to her chin in salt water.\n\n“I wish I hadn’t cried so much!” said Alice, as she swam about, trying to find her way out. “I shall be punished for it now, I suppose, by being drowned in my own tears!”\n\nJust then she heard something splashing about in the pool a little way off, and she swam nearer to make out what it was. She soon made out that it was only a mouse that had slipped in like herself.\n\n“O Mouse, do you know the way out of this pool? I am very tired of swimming about here, O Mouse!”\n\n“Perhaps it doesn’t understand English,” thought Alice. So she began again in French. The Mouse gave a sudden leap out of the water, and seemed to quiver all over with fright.\n\n“Oh, I beg your pardon!” cried Alice hastily. “I quite forgot you didn’t like cats.”\n\n“Not like cats!” cried the Mouse, in a shrill, passionate voice. “Would you like cats if you were me?”\n\n“Well, perhaps not,” said Alice in a soothing tone. “Don’t be angry about it.”\n\nThe Mouse was swimming away from her as hard as it could go. So she called softly after it, “Mouse dear! Do come back again, and we won’t talk about cats or dogs either, if you don’t like them!”\n\nWhen the Mouse heard this, it turned round and swam slowly back to her and said in a low trembling voice, “Let us get to the shore, and then I’ll tell you my history, and you’ll understand why it is I hate cats and dogs.”\n\nIt was high time to go, for the pool was getting quite crowded with the birds and animals that had fallen into it: there were a Duck and a Dodo, a Lory and an Eaglet, and several other curious creatures. Alice led the way, and the whole party swam to the shore."},
+    {roman:"III",title:"A Caucus-Race and a Long Tale",text:"They were indeed a queer-looking party that assembled on the bank—the birds with draggled feathers, the animals with their fur clinging close to them, and all dripping wet, cross, and uncomfortable.\n\nThe first question of course was, how to get dry again: they had a consultation about this, and after a few minutes it seemed quite natural to Alice to find herself talking familiarly with them, as if she had known them all her life.\n\nAt last the Mouse, who seemed to be a person of authority among them, called out, “Sit down, all of you, and listen to me! I’ll soon make you dry enough!”\n\nThey all sat down at once, in a large ring, with the Mouse in the middle.\n\n“Ahem!” said the Mouse with an important air, “are you all ready? This is the driest thing I know. Silence all round, if you please!”\n\n“Ugh!” said the Lory, with a shiver.\n\n“I beg your pardon!” said the Mouse, frowning, but very politely: “Did you speak?”\n\n“Not I!” said the Lory hastily.\n\nThe Mouse proceeded with a long historical account, but Alice was still as wet as ever.\n\n“In that case,” said the Dodo solemnly, rising to its feet, “I move that the meeting adjourn, for the immediate adoption of more energetic remedies—”\n\n“Speak English!” said the Eaglet. “I don’t know the meaning of half those long words.”\n\n“What I was going to say,” said the Dodo in an offended tone, “was, that the best thing to get us dry would be a Caucus-race.”\n\n“What is a Caucus-race?” said Alice.\n\n“Why,” said the Dodo, “the best way to explain it is to do it.”\n\nFirst it marked out a race-course, in a sort of circle, and then all the party were placed along the course, here and there. There was no “One, two, three, and away,” but they began running when they liked, and left off when they liked, so that it was not easy to know when the race was over.\n\nHowever, when they had been running half an hour or so, and were quite dry again, the Dodo suddenly called out “The race is over!” and they all crowded round it, panting, and asking, “But who has won?”\n\nAt last the Dodo said, “Everybody has won, and all must have prizes.”\n\n“But who is to give the prizes?” quite a chorus of voices asked.\n\n“Why, she, of course,” said the Dodo, pointing to Alice with one finger.\n\nAlice had no idea what to do, and in despair she put her hand in her pocket, and pulled out a box of comfits, and handed them round as prizes. There was exactly one a-piece, all round.\n\n“But she must have a prize herself, you know,” said the Mouse.\n\n“Only a thimble,” said Alice sadly, when asked what else she had.\n\nThen they all crowded round her once more, while the Dodo solemnly presented the thimble, saying “We beg your acceptance of this elegant thimble;” and, when it had finished this short speech, they all cheered.\n\n“You promised to tell me your history, you know,” said Alice, “and why it is you hate—C and D.”\n\n“Mine is a long and a sad tale!” said the Mouse, turning to Alice, and sighing.\n\n“It is a long tail, certainly,” said Alice, looking down with wonder at the Mouse’s tail; “but why do you call it sad?”\n\n“You are not attending!” said the Mouse to Alice severely. “What are you thinking of?”\n\n“I beg your pardon,” said Alice very humbly.\n\n“I shall do nothing of the sort,” said the Mouse, getting up and walking away. “You insult me by talking such nonsense!”\n\n“Please come back and finish your story!” Alice called after it; and the others all joined in chorus, “Yes, please do!” but the Mouse only shook its head impatiently, and walked a little quicker.\n\n“I wish I hadn’t mentioned Dinah!” said Alice to herself in a melancholy tone. “Nobody seems to like her, down here, and I’m sure she’s the best cat in the world!”\n\nAnd here poor Alice began to cry again, for she felt very lonely and low-spirited.\n\nIn a little while, however, she again heard a little pattering of footsteps in the distance, and she looked up eagerly, half hoping that the Mouse had changed his mind, and was coming back to finish his story."}
+  ];
+
+
+  /* Complete offline demo library: the reader never fetches at runtime. */
+  const ALICE_EXTRA_CHAPTERS=[
+    {roman:"IV",title:"The Rabbit Sends in a Little Bill",text:`It was the White Rabbit, trotting slowly back again, and looking anxiously about as it went, as if it had lost something; and she heard it muttering to itself, “The Duchess! The Duchess! Oh! won’t she be savage if I’ve kept her waiting!” Alice felt so desperate that she was ready to ask help of any one; so, when the Rabbit came near her, she began, in a low, timid voice, “If you please, sir—” The Rabbit started violently, dropped the white kid gloves and the fan, and skurried away into the darkness as hard as it could go.
+
+Alice took up the fan and gloves, and, as the hall was very hot, she kept fanning herself all the time she went on talking. She soon found that, while she was fanning herself, she was growing smaller again, and she hurried away towards the little door. But the door was shut, and the little golden key was lying on the glass table as before.
+
+Poor Alice! She got very angry and stamped her foot, for she had never before been ordered about in that way. The White Rabbit returned, calling for Mary Ann, and mistook Alice for his servant. “Go and fetch me a pair of gloves this moment!” he cried. Alice, very much frightened, ran off at once in the direction he pointed.
+
+She found a neat little house with the name W. RABBIT on the door, went in without knocking, and ran upstairs. There she found another little bottle marked “DRINK ME.” Alice decided to taste it; but this time she grew and grew until one arm came out of the window and one foot pressed against the chimney.
+
+The Rabbit and several other animals gathered outside in alarm. They tried to get Bill, a little lizard, down the chimney. Alice stretched out her hand and sent him flying. Pebbles thrown through the window changed into little cakes. Alice ate one and began to shrink again. At last she escaped into the wood, still determined to find the garden and discover what sort of creatures lived in this extraordinary place.`},
+    {roman:"V",title:"Advice from a Caterpillar",text:`Alice walked on until she came upon a large mushroom, and on the top of it was sitting a Caterpillar, with its arms folded, quietly smoking a long hookah. For some time neither of them spoke.
+
+At last the Caterpillar took the hookah out of its mouth and addressed her in a languid, sleepy voice. “Who are you?” This was not an encouraging opening for a conversation. Alice replied rather shyly that she hardly knew who she was at present, because she had changed several times since that morning.
+
+“What do you mean by that?” said the Caterpillar sternly. Alice explained that being so many different sizes in one day was very confusing. The Caterpillar was not satisfied. It asked her to repeat a poem, but Alice found that the words came out wrong.
+
+After a long silence the Caterpillar asked, “What size do you want to be?” Alice replied that she was not particular about size, only that it was unpleasant to be changing so often. The Caterpillar finally climbed down from the mushroom and gave her a useful piece of advice: one side of the mushroom would make her grow taller, and the other side would make her grow shorter.
+
+Alice carefully broke off pieces from each side and experimented. At first she grew so suddenly that her neck rose high above the trees, frightening a Pigeon who accused her of being a serpent. By taking tiny bites from one side and then the other, Alice gradually learned to control her size.
+
+At last she managed to make herself about nine inches high. Feeling much more comfortable, she set off through the forest, hoping that this new knowledge would help her reach the beautiful garden at last.`},
+    {roman:"VI",title:"Pig and Pepper",text:`A Fish-Footman carrying an enormous letter knocked at the door of a small house. Another footman received the letter, which was addressed to the Duchess and contained an invitation from the Queen to play croquet. Alice approached the house and wondered how she was to get inside.
+
+The door was opened, and Alice entered a kitchen full of smoke and pepper. The Duchess sat in the middle nursing a baby, while the Cook stirred a large cauldron of soup. A Cheshire Cat sat grinning on the hearth. The Duchess threw the baby to Alice and went away to prepare for the Queen’s game.
+
+Alice carried the baby outside. To her surprise, it began grunting and gradually changed into a pig. She set it down and watched it trot happily away into the wood.
+
+Soon the Cheshire Cat appeared again, first as a grin and then as a whole cat. Alice asked which way she ought to go. The Cat replied that it depended on where she wanted to get to. When Alice said she did not much care where, the Cat observed that then it did not matter which way she walked.
+
+The Cat told her that a Hatter lived in one direction and a March Hare in another, and that both were mad. Alice chose the March Hare’s house because she had already seen the Hatter. As she walked away, the Cat slowly vanished until nothing remained but its grin.
+
+Alice thought she had often seen a cat without a grin, but never a grin without a cat. She continued through the wood toward the strange tea-party that awaited her.`},
+    {roman:"VII",title:"A Mad Tea-Party",text:`There was a table set out under a tree in front of the March Hare’s house, and the March Hare and the Hatter were having tea with a Dormouse between them. They were crowded together at one corner, though the table was large enough for many more people.
+
+“No room! No room!” they cried when they saw Alice coming. “There’s plenty of room!” said Alice indignantly, and she sat down in a large arm-chair at one end of the table.
+
+The March Hare offered her wine, though there was nothing on the table but tea. The Hatter then asked a riddle: “Why is a raven like a writing-desk?” Alice tried to find an answer, but the Hatter admitted that he did not know one either.
+
+The conversation grew stranger. They argued about Time, and the Hatter explained that he had quarrelled with Time at a concert given by the Queen of Hearts. Since then, he said, it was always six o’clock for him, which was why they were constantly having tea.
+
+The Dormouse was asleep most of the time. Whenever it began to wake, the others pinched it and demanded a story. It began telling a tale about three little sisters who lived at the bottom of a treacle-well, but every attempt by Alice to understand the story produced more nonsense.
+
+At last Alice grew tired of the whole company. She walked away, saying it was the stupidest tea-party she had ever attended. Looking back, she saw the Hatter and March Hare trying to put the Dormouse into the teapot.
+
+She found a little door in a tree and, after changing her size once more with pieces of mushroom, finally passed through into the beautiful garden she had wanted to reach since the beginning of her adventure.`},
+    {roman:"VIII",title:"The Queen’s Croquet-Ground",text:`The garden was full of playing cards who were painting white roses red. Alice asked why they were doing this, and one of them whispered that they had planted the wrong kind of roses and were afraid the Queen would have them executed.
+
+Soon a procession appeared: soldiers shaped like clubs, courtiers, royal children, guests, and at last the King and Queen of Hearts. Everyone bowed deeply. The Queen immediately noticed Alice and asked who she was. Alice introduced herself, trying not to be frightened.
+
+The Queen then invited her to play croquet. The game was unlike any Alice had ever seen. The balls were live hedgehogs, the mallets were flamingos, and the arches were soldiers bending themselves into hoops. Nobody waited for a turn, and the Queen kept shouting, “Off with his head!” whenever anything displeased her.
+
+The Cheshire Cat appeared in the air, beginning with its smile. Alice was glad to see someone she knew. But a dispute arose over whether the Cat could be executed when only its head was visible. The King, Queen, and executioner argued until the Duchess was brought from prison.
+
+The Duchess became suddenly friendly and insisted on finding a moral in everything. Alice found her company nearly as exhausting as the croquet game.
+
+Eventually Alice left the Queen’s court and followed the Gryphon, who had been ordered to take her to hear the Mock Turtle tell his history.`},
+    {roman:"IX",title:"The Mock Turtle’s Story",text:`The Gryphon led Alice to a melancholy creature sitting on a rock and sighing deeply. “This here is the Mock Turtle,” said the Gryphon. “Sit down, both of you, and don’t speak a word till I’ve finished.”
+
+The Mock Turtle began to tell Alice about his education. He had once attended a school beneath the sea, where the lessons included Reeling and Writhing, Ambition, Distraction, Uglification, and Derision. Alice tried to understand how these subjects could possibly exist, but the Mock Turtle and Gryphon treated the absurd curriculum with complete seriousness.
+
+He described the different courses and the daily schedule. The lessons became shorter every day because, as he explained, that was the reason they were called lessons: they lessened from day to day.
+
+The Mock Turtle was often interrupted by his own sadness. The Gryphon encouraged him to continue, and Alice listened politely, though she found the story more confusing than helpful.
+
+At last the conversation turned to the Lobster Quadrille, a dance performed on the shore. The Gryphon described how the dancers partnered lobsters, advanced from the sea, and then threw their partners as far as they could into the water.
+
+Alice had never seen such a dance, and the Gryphon offered to demonstrate it. The Mock Turtle sang a mournful song, while the Gryphon and Alice prepared to learn more about the strange customs of the creatures beneath the sea.`},
+    {roman:"X",title:"The Lobster Quadrille",text:`“Will you walk a little faster?” said a whiting to a snail in the Mock Turtle’s song. The creatures spoke of porpoises, tides, and the strange necessity of joining the dance. Alice listened as the Mock Turtle sang with great emotion, though the words made less and less sense.
+
+The Gryphon then asked Alice to tell them about her adventures. She began with the rabbit-hole and explained how she had changed size so many times that she was no longer certain of herself. When she mentioned repeating poems incorrectly, the Mock Turtle asked her to recite one.
+
+Alice tried, but once again the familiar verses came out altered into nonsense. The Gryphon and Mock Turtle listened seriously, correcting nothing and appearing more interested in the strangeness of Wonderland than in the correctness of the poem.
+
+The Mock Turtle began another song, this time about a soup made from turtle. It sang with increasing feeling, and the Gryphon repeatedly called out for it to continue.
+
+Suddenly, far away, Alice heard the cry, “The trial’s beginning!” The Gryphon seized her hand. “Come on!” it said, and ran with her as fast as it could.
+
+They hurried away from the Mock Turtle and the shore, leaving the song unfinished. Alice followed eagerly, because after so many strange encounters she was curious to see what sort of trial could possibly take place in the court of the Queen of Hearts.`},
+    {roman:"XI",title:"Who Stole the Tarts?",text:`When Alice and the Gryphon arrived, the King and Queen of Hearts were seated on their thrones, surrounded by a great crowd of birds and beasts and the whole pack of cards. The Knave of Hearts stood before them in chains, and the White Rabbit acted as herald.
+
+The accusation was read aloud: the Knave of Hearts was charged with stealing the Queen’s tarts and carrying them away. The jury wrote everything down on slates, even when they did not understand what had been said.
+
+The first witness was the Hatter, who came to court carrying a teacup and a piece of bread and butter. He was questioned about the time of his tea-party and became so nervous that he kept changing his shoes.
+
+The next witness was the Duchess’s Cook, who claimed that the soup was made chiefly of pepper. The questioning became so confused that the King threatened to execute nearly everyone involved.
+
+Alice noticed that she had begun growing again. She was becoming larger and less frightened by the absurd court. When the Dormouse objected to her size, Alice replied that she had as much right to be there as anyone else.
+
+The White Rabbit then announced another piece of evidence: a letter supposedly written by the Knave. But the letter had no signature, and the verses inside made no sense. The King nevertheless insisted that the nonsense must prove the Knave’s guilt.
+
+Alice began to challenge the court’s reasoning. The more she grew, the more confident she became, until the Queen angrily demanded that the sentence be given before the verdict.`},
+    {roman:"XII",title:"Alice’s Evidence",text:`“Sentence first—verdict afterwards!” cried the Queen. “Stuff and nonsense!” said Alice loudly. “The idea of having the sentence first!”
+
+“Hold your tongue!” said the Queen, turning purple with rage. Alice refused. “Who cares for you?” she said. “You’re nothing but a pack of cards!”
+
+The whole pack rose into the air and came flying down upon her. Alice gave a little scream and tried to beat them off.
+
+Then she found herself lying on the bank, with her head in the lap of her sister, who was gently brushing away some leaves that had fallen from the trees upon her face.
+
+“Wake up, Alice dear!” said her sister. “Why, what a long sleep you’ve had!”
+
+“Oh, I’ve had such a curious dream!” said Alice, and she began telling her sister everything she could remember: the White Rabbit, the Caterpillar, the Cheshire Cat, the Hatter, the Queen, the Gryphon, and the Mock Turtle.
+
+When Alice had finished, her sister sat quietly and watched her run away. She imagined Wonderland and all its strange creatures, and she thought of Alice growing into a woman while keeping the same simple and loving heart.
+
+And so the dream of Wonderland faded into the ordinary afternoon, leaving behind the memory of a place where logic could turn upside down, animals could speak, and a curious child could discover that imagination made even the strangest journey possible.`}
+  ];
+  const COMPLETE_ALICE_CHAPTERS=[...LOCAL_PUBLIC_DOMAIN_CHAPTERS,...ALICE_EXTRA_CHAPTERS];
+
+  const BOOK_READ_CONTENT={};
+  BOOKS.forEach(b=>{
+    // A local public-domain demo edition is intentionally used for books whose
+    // copyrighted full text cannot be bundled. No fetch, API, CORS, or network
+    // request is required, so the reader also works from file:// offline.
+    BOOK_READ_CONTENT[b.t]=COMPLETE_ALICE_CHAPTERS;
+  });
+
+  function loadState(){try{return JSON.parse(localStorage.getItem(STORE)||'{}')}catch(e){return {}}}
+  function saveState(s){try{localStorage.setItem(STORE,JSON.stringify(s))}catch(e){}}
+  function syncState(){const s=loadState();BOOKS.forEach(b=>{const x=s[b.isbn];if(!x)return;if(x.s)b.s=x.s;if(typeof x.fav==='boolean')b.fav=x.fav;if(typeof x.progress==='number')b.progress=x.progress})}
+  function persist(b){const s=loadState();s[b.isbn]={s:b.s,fav:!!b.fav,progress:Number(b.progress||0)};saveState(s)}
+  function getBook(){return BOOKS.find(b=>b.isbn===curIsbn)||currentBook}
+  syncState();
+
+  window.setCollection=function(mode,el){
+    closeSidebar();
+    bmCollectionMode=mode;
+    curStatus='all';curCat='all';searchQ='';
+    document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
+    if(el)el.classList.add('active');
+    document.querySelectorAll('.fpill').forEach(x=>x.classList.remove('active'));
+    const all=document.querySelector('.fpill');if(all)all.classList.add('active');
+    document.getElementById('topbar-title').textContent=mode==='favorites'?'Favorites':mode==='wishlist'?'Wish List':'My Library';
+    document.getElementById('view-covers').style.display='grid';
+    document.getElementById('view-spines').style.display='none';
+    document.getElementById('view-shelf').style.display='none';
+    curView='covers';
+    render();
+  };
+
+  window.markStatus=function(btn,status){const b=getBook();if(!b)return;b.s=status;persist(b);showToast(status==='read'?'Marked as Read':status==='reading'?'Marked as Reading':'Added to Want to Read');document.getElementById('modal').classList.remove('open');render()};
+  window.markFav=function(){const b=getBook();if(!b)return;b.fav=!b.fav;persist(b);const btn=document.getElementById('modal-fav-btn');if(btn)btn.textContent=b.fav?'★ Remove Favorite':'★ Favorite';showToast(b.fav?'Added to Favorites':'Removed from Favorites');render()};
+
+  function meta(b){return META[b.t]||{short:b.t+' by '+b.a,detailed:'Detailed overview for '+b.t,themes:[b.g],characters:[b.a],aspects:[b.g]}}
+  
+  window.openSummaryForCurrentBook=function(){
+    const b=getBook();if(!b)return;
+    document.getElementById('summary-title').textContent='AI Summary: '+b.t;
+    document.getElementById('summary-modal').classList.add('open');
+    document.getElementById('summary-modal').setAttribute('aria-hidden','false');
+    showSummaryTab('short',document.querySelector('.summary-tab[data-tab="short"]'));
+  };
+
+  window.showSummaryTab=function(tab,btn){
+    const b=getBook();if(!b)return;
+    const d=meta(b);
+    document.querySelectorAll('.summary-tab').forEach(x=>x.classList.remove('active'));
+    if(btn)btn.classList.add('active');
+    const map={
+      short:['Short Summary','<p>'+esc(d.short)+'</p>'],
+      detailed:['Detailed Summary','<p>'+esc(d.detailed)+'</p>'],
+      themes:['Main Themes','<ul>'+d.themes.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>'],
+      characters:['Important Characters','<ul>'+d.characters.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>'],
+      aspects:['Key Aspects','<ul>'+d.aspects.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>']
+    };
+    const m=map[tab]||map.short;
+    document.getElementById('summary-content').innerHTML='<h3>'+m[0]+'</h3>'+m[1];
+    document.getElementById('summary-progress-bar').style.width=({short:20,detailed:40,themes:60,characters:80,aspects:100}[tab]||20)+'%';
+  };
+
+  window.closeFeatureModal=function(e,id){if(!e||e.target===document.getElementById(id))document.getElementById(id).classList.remove('open')};
+
+  window.openAssistantForCurrentBook=function(){
+    const b=getBook();if(!b)return;
+    document.getElementById('assistant-title').textContent='Ask AI Assistant About This Book';
+    document.getElementById('assistant-context').textContent='Context: '+b.t+' • '+b.a+' • '+b.g;
+    document.getElementById('assistant-messages').innerHTML='';
+    addAssistantMessage('I’m ready to help with '+b.t+' by '+b.a+'. Ask about the summary, themes, characters, plot details, or reading experience!',false);
+    document.getElementById('assistant-modal').classList.add('open');
+    document.getElementById('assistant-modal').setAttribute('aria-hidden','false');
+    setTimeout(()=>document.getElementById('assistant-input').focus(),50);
+  };
+
+  window.addAssistantMessage=function(text,user){
+    const d=document.createElement('div');
+    d.className='assistant-msg '+(user?'user':'bot');
+    d.textContent=text;
+    const m=document.getElementById('assistant-messages');
+    m.appendChild(d);
+    m.scrollTop=m.scrollHeight;
+  };
+
+  window.askBookAssistant=function(){
+    const input=document.getElementById('assistant-input'),q=input.value.trim(),b=getBook();
+    if(!q||!b)return;
+    addAssistantMessage(q,true);
+    input.value='';
+    const d=meta(b),l=q.toLowerCase();
+    let a=l.includes('theme')?'Main themes in '+b.t+': '+d.themes.join('; ')+'.':
+          l.includes('character')||l.includes('who')?'Key characters: '+d.characters.join('; ')+'.':
+          l.includes('summary')||l.includes('about')||l.includes('plot')?d.short+' '+d.detailed:
+          l.includes('genre')||l.includes('type')?b.t+' is a renowned work in the '+b.g+' genre.':
+          'In '+b.t+' by '+b.a+': '+d.short+' Feel free to ask about specific characters, themes, or plot details!';
+    setTimeout(()=>addAssistantMessage(a,false),120);
+  };
+
+  window.openReaderForCurrentBook=function(){
+    const b=getBook();if(!b)return;
+    document.getElementById('modal').classList.remove('open');
+    openReader(b);
+  };
+
+  function openReader(b){
+    readerBookIsbn=b.isbn;
+    readerIndex=0;
+    readerFont=Number(localStorage.getItem('bookmark-reader-font')||18);
+    readerTheme=localStorage.getItem('bookmark-reader-theme')||'parchment';
+    document.getElementById('reader-title').textContent=b.t;
+    document.getElementById('reader-author').textContent=b.a;
+    const demoLabel=document.querySelector('.reader-demo-label');
+    if(demoLabel) demoLabel.textContent='Demo reading edition • Public-domain text: Alice’s Adventures in Wonderland by Lewis Carroll';
+    
+    const r=document.getElementById('reader');
+    r.className='reader open '+readerTheme;
+    r.setAttribute('aria-hidden','false');
+    document.getElementById('reader-font-size').textContent=readerFont+'px';
+    document.querySelectorAll('.reader-theme').forEach(x=>x.classList.toggle('active',x.dataset.theme===readerTheme));
+    
+    readerChapters=BOOK_READ_CONTENT[b.t]||[];
+    renderReaderChapter();
+  }
+
+  function renderReaderChapter(){
+    const c=readerChapters[readerIndex];
+    if(!c)return;
+    document.getElementById('reader-chapter-kicker').textContent='Chapter '+c.roman;
+    document.getElementById('reader-chapter-title').textContent=c.title;
+    document.getElementById('reader-text').innerHTML=c.text.split(/\n\n+/).map(p=>'<p>'+esc(p.trim())+'</p>').join('');
+    document.getElementById('reader-text').style.fontSize=readerFont+'px';
+    document.getElementById('reader-section').textContent='Section '+(readerIndex+1)+' of '+readerChapters.length;
+    document.getElementById('reader-progress').textContent=Math.round((readerIndex+1)/readerChapters.length*100)+'%';
+    document.getElementById('reader-prev').disabled=readerIndex===0;
+    document.getElementById('reader-next').disabled=readerIndex===readerChapters.length-1;
+    
+    const b=BOOKS.find(x=>x.isbn===readerBookIsbn);
+    if(b){
+      b.progress=Math.round((readerIndex+1)/readerChapters.length*100);
+      persist(b);
+    }
+    document.querySelector('.reader-main').scrollTop=0;
+    stopReadAloud();
+  }
+
+  window.previousChapter=function(){if(readerIndex>0){readerIndex--;renderReaderChapter()}};
+  window.nextChapter=function(){if(readerIndex<readerChapters.length-1){readerIndex++;renderReaderChapter()}};
+  window.changeReaderFont=function(d){readerFont=Math.max(14,Math.min(30,readerFont+d));document.getElementById('reader-font-size').textContent=readerFont+'px';document.getElementById('reader-text').style.fontSize=readerFont+'px';localStorage.setItem('bookmark-reader-font',readerFont)};
+  window.setReaderTheme=function(theme,btn){readerTheme=theme;const r=document.getElementById('reader');r.classList.remove('parchment','sepia','night');r.classList.add(theme);document.querySelectorAll('.reader-theme').forEach(x=>x.classList.remove('active'));if(btn)btn.classList.add('active');localStorage.setItem('bookmark-reader-theme',theme)};
+  window.toggleReadAloud=function(){speechActive?stopReadAloud():startReadAloud()};
+  
+  function startReadAloud(){
+    if(!('speechSynthesis' in window)){showToast('Read Aloud is not supported in this browser');return}
+    stopReadAloud();
+    const t=document.getElementById('reader-text').innerText.trim();
+    if(!t)return;
+    const u=new SpeechSynthesisUtterance(t);
+    u.rate=.9;
+    u.onend=()=>setSpeech(false);
+    u.onerror=()=>setSpeech(false);
+    speechSynthesis.speak(u);
+    setSpeech(true);
+  }
+
+  function setSpeech(v){
+    speechActive=v;
+    const b=document.getElementById('read-aloud-btn');
+    if(b){
+      b.classList.toggle('speaking',v);
+      b.innerHTML=v?'⏹ Stop Reading':'🔊 <span>Read Aloud</span>';
+    }
+  }
+
+  function stopReadAloud(){if('speechSynthesis' in window)speechSynthesis.cancel();setSpeech(false)}
+  
+  window.closeReader=function(){
+    stopReadAloud();
+    document.getElementById('reader').classList.remove('open');
+    document.getElementById('reader').setAttribute('aria-hidden','true');
+    readerChapters=[];
+  };
+
+  document.addEventListener('keydown',function(e){
+    if(!document.getElementById('reader').classList.contains('open'))return;
+    if(e.key==='Escape')closeReader();
+    if(e.key==='ArrowRight')nextChapter();
+    if(e.key==='ArrowLeft')previousChapter();
+  });
+
+
+  // Additive feature data and UI. Existing BOOKS and systems are untouched.
+  const MORAL_COMPASS_DATA={
+    'Pride and Prejudice':{scenario:'Imagine you are in Elizabeth Bennet’s position: you receive information that could seriously affect someone else’s future, but the truth is incomplete and your own first impressions may be biased.',choices:['Speak immediately, based on what you believe.','Protect the person until you know more.','Confront the people involved privately first.','Pause and investigate before taking a side.']},
+    'Alice in Wonderland':{scenario:'Imagine you are Alice in an unfamiliar world where every rule seems uncertain. You must decide whether to follow instructions, question authority, or trust your own judgment.',choices:['Follow the clearest rule you can find.','Question the authority giving the instruction.','Ask others for help before acting.','Trust your own judgment and explore carefully.']}
+  };
+  const PERSPECTIVE_DATA={
+    'Pride and Prejudice':{event:'A first meeting is shaped by limited information, social expectations, and quick judgments.',character:'A central character may see the encounter as a test of pride, attraction, or self-protection.',opposing:'The other person may interpret the same behavior as coldness, disrespect, or unfair judgment.',neutral:'An outside observer might notice how class, manners, and incomplete information influence everyone involved.',historical:'A reader in the Regency period may have paid particular attention to reputation, marriage, property, and social rank.',modern:'A modern reader may focus more strongly on personal autonomy, emotional honesty, and the risks of snap judgments.'},
+    'Alice in Wonderland':{event:'Alice repeatedly encounters a world whose rules shift without warning.',character:'From Alice’s viewpoint, the event can feel confusing but also like a test of curiosity and independence.',opposing:'A Wonderland inhabitant may see Alice as the strange outsider who keeps applying the wrong assumptions.',neutral:'A neutral observer might notice that communication breaks down because everyone assumes different rules.',historical:'A nineteenth-century reader may have noticed the playful satire of education, manners, language, and authority.',modern:'A modern reader may connect the shifting rules with identity, uncertainty, or the experience of entering an unfamiliar system.'}
+  };
+  const HISTORICAL_CONTEXT_DATA={
+    'Pride and Prejudice':{period:'Regency England • published 1813',society:'Social position, family connections, visiting, assemblies, and marriage strongly shaped many middle- and upper-class social interactions.',politics:'The novel appeared during Britain’s Regency era and the long period of conflict associated with the Napoleonic Wars.',technology:'Print culture, stagecoaches, sailing ships, and early industrial change shaped communication and travel; there was no electronic communication.',education:'Educational opportunities differed sharply by class and gender. Literacy was growing, while women’s formal opportunities were often more restricted.',norms:'Inheritance, reputation, property, and marriage could have major consequences, especially for women in families with limited financial security.',literary:'The novel belongs to the development of the English novel of manners and uses irony to examine social behavior and judgment.',then:'Readers of the period may have read marriage, property, and reputation as immediate practical concerns rather than only romantic obstacles.',now:'Modern readers may bring stronger expectations of individual choice and equality, changing how they judge family pressure and social hierarchy.'},
+    'Alice in Wonderland':{period:'Victorian Britain • published 1865',society:'Victorian Britain had strong ideas about childhood, manners, class, and proper behavior, all of which the book playfully unsettles.',politics:'The work appeared during Queen Victoria’s reign, when Britain was a major imperial power and public institutions were expanding.',technology:'Railways, telegraphs, photography, and industrial production were transforming everyday life, though Wonderland itself is deliberately fantastical.',education:'Children’s lessons often relied heavily on memorisation and recitation; the book parodies familiar classroom exercises and moral verse.',norms:'Adults commonly expected children to be obedient and well mannered, making Alice’s questioning of strange authority especially significant.',literary:'The book helped develop a new kind of children’s fantasy literature built around nonsense, wordplay, and imaginative worlds.',then:'A Victorian reader may have recognised more of the jokes about schoolroom learning, etiquette, and authority.',now:'Modern readers may focus more on identity, absurd bureaucracy, curiosity, and the freedom to question arbitrary rules.'}
+  };
+  // Independent state for the additive features. Capture the selected book once so
+  // interactions inside the feature panels do not depend on the underlying modal state.
+  let mcActiveBook=null, perspectiveActiveBook=null, historyActiveBook=null;
+  function featureBook(){
+    try{return (typeof getBook==='function'&&getBook())||currentBook||BOOKS.find(b=>b.isbn===curIsbn)||null}catch(e){return currentBook||null}
+  }
+  function openFeatureUnavailable(id,msg){
+    const el=document.getElementById(id);if(el)el.innerHTML='<div class="feature-unavailable">'+esc(msg||'This experience is not available for this title yet.')+'</div>';
+  }
+  function genericMoralData(b){return {scenario:'Imagine you are facing a difficult decision in the world of '+b.t+'. You have incomplete information, your choice could affect other people, and there may be no perfectly simple answer.',choices:['Act immediately on what you currently believe is right.','Protect the people closest to you while you learn more.','Speak privately with the people involved before deciding.','Pause, gather more context, and consider the possible consequences.']};}
+  function genericPerspectiveData(b){return {event:'Consider a significant conflict, decision, or turning point in '+b.t+'. The same moment can be interpreted differently depending on who is looking at it.',character:'A central character may understand the event through personal goals, fears, relationships, and limited knowledge.',opposing:'Someone with different interests may interpret the same situation through a conflicting set of priorities and assumptions.',neutral:'An outside observer might notice facts, pressures, and consequences that the people directly involved overlook.',historical:'Readers closer to the work’s own cultural setting may have brought assumptions that differ from those of readers today.',modern:'A modern reader may bring contemporary ideas about identity, power, fairness, and individual choice to the same event.'};}
+
+  window.openMoralCompass=function(){
+    const b=featureBook();mcActiveBook=b;
+    const d=b&&(MORAL_COMPASS_DATA[b.t]||genericMoralData(b));
+    const body=document.getElementById('mc-body');
+    if(!b||!d){openFeatureUnavailable('mc-body');}
+    else{
+      body.innerHTML='<p style="color:var(--text2);margin-top:0">Based on <b>'+esc(b.t)+'</b></p><h3>Imagine you are in this character’s position.</h3><p>'+esc(d.scenario)+'</p><div class="mc-grid">'+d.choices.map((x,i)=>'<button type="button" class="mc-choice" data-mc-choice="'+i+'"><b>'+String.fromCharCode(65+i)+'.</b> '+esc(x)+'</button>').join('')+'</div><div class="mc-result" id="mc-result">Choose an option to explore how different ethical perspectives might see your decision.</div>';
+    }
+    const modal=document.getElementById('mc-modal');modal.classList.add('open');modal.setAttribute('aria-hidden','false');
+  };
+  window.selectMoralChoice=function(i){
+    const b=mcActiveBook||featureBook(),d=b&&(MORAL_COMPASS_DATA[b.t]||genericMoralData(b));if(!d)return;
+    document.querySelectorAll('#mc-body .mc-choice').forEach((x,n)=>x.classList.toggle('active',n===Number(i)));
+    const choice=d.choices[Number(i)];const result=document.getElementById('mc-result');if(!result)return;
+    result.innerHTML='<h3 style="margin-top:0">Your choice</h3><p>'+esc(choice)+'</p><b>How different perspectives might see your decision</b><div class="mc-perspectives"><div class="mc-persp"><strong>Consequences</strong>What outcomes could this choice create for everyone affected?</div><div class="mc-persp"><strong>Duty / rules</strong>Are there responsibilities or principles that should guide the decision?</div><div class="mc-persp"><strong>Character / virtue</strong>What response best reflects honesty, courage, fairness, or wisdom?</div><div class="mc-persp"><strong>Empathy / care</strong>Whose vulnerability and relationships deserve special attention?</div></div><p style="color:var(--text3);font-size:12px;margin-bottom:0">These are competing ways to think, not a verdict about you or a scientifically accurate score.</p>';
+  };
+
+  window.openDifferentPerspectives=function(){
+    const b=featureBook();perspectiveActiveBook=b;
+    const d=b&&(PERSPECTIVE_DATA[b.t]||genericPerspectiveData(b)),body=document.getElementById('perspective-body');
+    if(!b||!d)openFeatureUnavailable('perspective-body');
+    else{
+      const tabs=[['character','Character’s Perspective'],['opposing','Opposing Character'],['neutral','Neutral Observer'],['historical','Historical Reader'],['modern','Modern Reader']];
+      body.innerHTML='<p style="color:var(--text2)">Current book: <b>'+esc(b.t)+'</b></p><p>'+esc(d.event)+'</p><div class="perspective-tabs">'+tabs.map((x,i)=>'<button type="button" data-perspective="'+x[0]+'" class="'+(!i?'active':'')+'">'+x[1]+'</button>').join('')+'</div><div class="perspective-output" id="perspective-output"><small>Interpretive perspective</small><p>'+esc(d.character)+'</p><p style="margin-bottom:0;color:var(--text2)">The same event can feel different depending on who is looking at it.</p></div>';
+    }
+    const modal=document.getElementById('perspective-modal');modal.classList.add('open');modal.setAttribute('aria-hidden','false');
+  };
+  window.showPerspective=function(k,btn){
+    const b=perspectiveActiveBook||featureBook(),d=b&&(PERSPECTIVE_DATA[b.t]||genericPerspectiveData(b));if(!d)return;
+    document.querySelectorAll('#perspective-body [data-perspective]').forEach(x=>x.classList.toggle('active',x.dataset.perspective===k));
+    const out=document.getElementById('perspective-output');if(!out)return;
+    out.innerHTML='<small>Interpretive perspective</small><p>'+esc(d[k]||d.character)+'</p><p style="margin-bottom:0;color:var(--text2)">This is an interpretation, not a quotation or a claim about the author’s intended meaning.</p>';
+  };
+
+  window.openHistoricalTimeMachine=function(){
+    const b=featureBook();historyActiveBook=b;
+    const d=b&&HISTORICAL_CONTEXT_DATA[b.t],body=document.getElementById('history-body');
+    if(!b||!d){openFeatureUnavailable('history-body','This experience is not available for this title yet.');}
+    else{
+      const cards=[['📜 SOCIETY',d.society],['🏛️ POLITICS',d.politics],['⚙️ TECHNOLOGY',d.technology],['🎓 EDUCATION',d.education],['👥 SOCIAL NORMS',d.norms],['📚 LITERARY CONTEXT',d.literary]];
+      body.innerHTML='<div class="history-period"><span>TIME PERIOD</span><b>'+esc(d.period)+'</b></div><div class="history-grid">'+cards.map(x=>'<div class="history-card"><h4>'+x[0]+'</h4><div>'+esc(x[1])+'</div></div>').join('')+'</div><h3 style="margin:18px 0 8px">Read this like someone from the time</h3><div class="perspective-output">'+esc(d.then)+'</div><h3 style="margin:18px 0 8px">Read this as a modern reader</h3><div class="perspective-output">'+esc(d.now)+'</div><h3 style="margin:18px 0 8px">THEN vs NOW</h3><div class="then-now"><div><b>THEN</b><p>'+esc(d.then)+'</p></div><div><b>NOW</b><p>'+esc(d.now)+'</p></div></div><p style="color:var(--text3);font-size:12px">Historical readers were not a single group; these are cautious contextual comparisons, not claims that everyone thought alike.</p>';
+    }
+    const modal=document.getElementById('history-modal');modal.classList.add('open');modal.setAttribute('aria-hidden','false');
+  };
+
+  // Delegated listeners keep the new interactive controls functional even after their panel is re-rendered.
+  document.addEventListener('click',function(e){
+    const moral=e.target.closest('[data-mc-choice]');if(moral){e.preventDefault();window.selectMoralChoice(Number(moral.dataset.mcChoice));return;}
+    const perspective=e.target.closest('[data-perspective]');if(perspective){e.preventDefault();window.showPerspective(perspective.dataset.perspective,perspective);}
+  });
+
+
+  setTimeout(function(){syncState();render();updateStats();},0);
+})();
+
+/* ===== ADDITIVE FEATURE SYSTEMS ===== */
+(function(){
+  const BOS_KEY='bookmark_custom_shelves', BOS_LEGACY_KEY='bookmark_custom_shelf', LM_KEY='bookmark_library_mood';
+  let bosState={title:'My Shelf',books:[]}, bosShelves=[], book3dPending=null, book3dTimer=null;
+  const escNew=v=>String(v==null?'':v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  function bosLoad(){
+    try{
+      const saved=JSON.parse(localStorage.getItem(BOS_KEY));
+      if(Array.isArray(saved)) bosShelves=saved.map(s=>({title:String(s.title||'').trim(),books:Array.isArray(s.books)?s.books.filter(i=>BOOKS.some(b=>b.isbn===i)):[]})).filter(s=>s.title);
+      else{
+        const legacy=JSON.parse(localStorage.getItem(BOS_LEGACY_KEY));
+        if(legacy&&Array.isArray(legacy.books)&&legacy.title) bosShelves=[{title:String(legacy.title).trim(),books:legacy.books.filter(i=>BOOKS.some(b=>b.isbn===i))}];
+      }
+    }catch(e){bosShelves=[]}
+    window.__bookmarkGetCustomShelves=()=>bosShelves;
+  }
+  function bosPersist(){try{localStorage.setItem(BOS_KEY,JSON.stringify(bosShelves));}catch(e){}}
+  function bosBook(id){return BOOKS.find(b=>b.isbn===id)}
+  function bosRender(){
+    const picker=document.getElementById('bos-picker'),wood=document.getElementById('bos-wood'),input=document.getElementById('bos-title'),head=document.getElementById('bos-shelf-heading');if(!picker||!wood)return;
+    if(input)input.value=bosState.title;if(head)head.textContent=bosState.title||'My Shelf';
+    picker.innerHTML=BOOKS.map(b=>`<button type="button" class="bos-pick ${bosState.books.includes(b.isbn)?'selected':''}" data-bos-id="${escNew(b.isbn)}"><img src="${coverUrl(b.isbn,'L')}" onerror="this.style.display='none'"><b>${escNew(b.t)}</b></button>`).join('');
+    wood.innerHTML=bosState.books.map((id,i)=>{const b=bosBook(id);if(!b)return'';return `<div class="bos-shelf-book"><img src="${coverUrl(b.isbn,'L')}" alt="${escNew(b.t)}" onerror="this.outerHTML='<div class=&quot;bos-shelf-fallback&quot; style=&quot;background:${escNew(b.gr)}&quot;>${escNew(b.t)}</div>'"><div class="bos-book-controls"><button class="bos-mini" data-bos-move="${i}" data-dir="-1" title="Move left">↑</button><button class="bos-mini" data-bos-move="${i}" data-dir="1" title="Move right">↓</button><button class="bos-mini" data-bos-remove="${i}" title="Remove">×</button></div></div>`}).join('')||'<div style="position:relative;z-index:1;color:#bda998;padding:20px">Add books from your library to build your shelf.</div>';
+  }
+  window.bosOpenShelf=function(){bosLoad();bosRender();document.getElementById('bos-modal').classList.add('open');document.getElementById('bos-modal').setAttribute('aria-hidden','false')};
+  window.bosCloseShelf=function(){document.getElementById('bos-modal').classList.remove('open')};
+  window.bosSave=function(){
+    const i=document.getElementById('bos-title'), title=i?i.value.trim():'';
+    if(!title){if(typeof showToast==='function')showToast('Please enter a shelf name');if(i)i.focus();return;}
+    bosState.title=title;
+    const existing=bosShelves.findIndex(s=>s.title.toLowerCase()===title.toLowerCase());
+    const savedShelf={title:title,books:[...bosState.books]};
+    if(existing>=0) bosShelves[existing]=savedShelf; else bosShelves.push(savedShelf);
+    bosPersist();
+    window.__bookmarkGetCustomShelves=()=>bosShelves;
+    bosRender();
+    if(typeof render==='function')render();
+    if(typeof showToast==='function')showToast(existing>=0?'Shelf updated':'Shelf saved');
+  };
+  window.bosClear=function(){bosState.books=[];bosRender()};
+  document.addEventListener('click',function(e){const pick=e.target.closest('[data-bos-id]');if(pick){const id=pick.dataset.bosId;const n=bosState.books.indexOf(id);if(n>=0)bosState.books.splice(n,1);else bosState.books.push(id);bosPersist();bosRender();return}const rem=e.target.closest('[data-bos-remove]');if(rem){bosState.books.splice(+rem.dataset.bosRemove,1);bosPersist();bosRender();return}const mv=e.target.closest('[data-bos-move]');if(mv){const i=+mv.dataset.bosMove,j=i+(+mv.dataset.dir);if(j>=0&&j<bosState.books.length){[bosState.books[i],bosState.books[j]]=[bosState.books[j],bosState.books[i]];bosPersist();bosRender();}}});
+  bosLoad();
+
+  window.lmToggle=function(){document.getElementById('lm-pop').classList.toggle('open')};
+  window.lmSet=function(m){document.body.classList.remove('lm-midnight','lm-cozy','lm-rainy','lm-candle');if(m!=='classic')document.body.classList.add('lm-'+m);document.querySelectorAll('.lm-option').forEach(b=>b.classList.toggle('active',b.dataset.lm===m));try{localStorage.setItem(LM_KEY,m)}catch(e){};};
+  try{lmSet(localStorage.getItem(LM_KEY)||'classic')}catch(e){}
+
+  function selected3dBook(){try{return currentBook||BOOKS.find(b=>b.isbn===curIsbn)||null}catch(e){return null}}
+  function book3dFallback(b){return `<div class="book3d-fallback">${escNew(b.t)}<small>${escNew(b.a)}</small></div>`}
+  function book3dStart(b,after){
+    if(!b){if(after)after();else if(typeof showToast==='function')showToast('Select a book first');return}
+    book3dPending=typeof after==='function'?after:null;
+    const ov=document.getElementById('book3d-overlay'),obj=document.getElementById('book3d-object'),front=document.getElementById('book3d-front'),cap=document.getElementById('book3d-caption');
+    if(!ov||!obj||!front){if(book3dPending)book3dPending();return}
+    obj.style.setProperty('--book3d-grad',b.gr||'linear-gradient(150deg,#5b3423,#b98a52)');
+    front.innerHTML=`<img src="${coverUrl(b.isbn,'L')}" alt="${escNew(b.t)}" onerror="this.parentElement.innerHTML=window.__book3dFallback">`;
+    window.__book3dFallback=book3dFallback(b);
+    cap.innerHTML=`<h2>${escNew(b.t)}</h2><p>${escNew(b.a)}</p>`;
+    ov.classList.add('open');ov.setAttribute('aria-hidden','false');
+    clearTimeout(book3dTimer);book3dTimer=setTimeout(()=>book3dFinish(false),2350);
+  }
+  window.book3dLaunchCurrent=function(){book3dStart(selected3dBook(),null)};
+  window.book3dFinish=function(skip){
+    clearTimeout(book3dTimer);const ov=document.getElementById('book3d-overlay');if(ov){ov.classList.remove('open');ov.setAttribute('aria-hidden','true')}
+    const next=book3dPending;book3dPending=null;setTimeout(()=>{if(next)next()},skip?0:120);
+  };
+
+  // Minimal integration: wrap the existing modal opener so a book click keeps its exact destination after the transition.
+  const originalOpenModal=window.openModal;
+  if(typeof originalOpenModal==='function'){
+    window.openModal=function(isbn,...rest){
+      if(window.__book3dBypass)return originalOpenModal.call(this,isbn,...rest);
+      const b=BOOKS.find(x=>x.isbn===isbn)||BOOKS.find(x=>x.t===rest[0]);
+      try{book3dStart(b,()=>{window.__book3dBypass=true;try{originalOpenModal.call(window,isbn,...rest)}finally{window.__book3dBypass=false}})}catch(e){return originalOpenModal.call(this,isbn,...rest)}
+    };
+  }
+})();
+
+</script>
+
+<div class="bos-modal-bg" id="bos-modal" aria-hidden="true"><div class="bos-panel" role="dialog" aria-modal="true"><button class="bos-close" onclick="bosCloseShelf()">×</button><div class="bos-title-row"><span style="font-size:28px">🪵</span><h2>Build Your Own Shelf</h2></div><div class="bos-layout"><section class="bos-section"><h3>Choose from your library</h3><div class="bos-book-picker" id="bos-picker"></div></section><section class="bos-section"><h3 id="bos-shelf-heading">My Shelf</h3><input id="bos-title" class="bos-title-input" value="My Shelf" aria-label="Shelf title"><div class="bos-wood" id="bos-wood"></div><div class="bos-actions"><button class="bos-action primary" onclick="bosSave()">Save Shelf</button><button class="bos-action" onclick="bosClear()">Clear Shelf</button></div><p style="font-size:12px;color:var(--text3);margin-bottom:0">Use ↑ and ↓ to reorder, or × to remove.</p></section></div></div></div>
+<div class="lm-pop" id="lm-pop"><h3>✨ Library Mood</h3><button class="lm-option" data-lm="classic" onclick="lmSet('classic')">📚 Classic Library</button><button class="lm-option" data-lm="midnight" onclick="lmSet('midnight')">🌙 Midnight Library</button><button class="lm-option" data-lm="cozy" onclick="lmSet('cozy')">☕ Cozy Reading Room</button><button class="lm-option" data-lm="rainy" onclick="lmSet('rainy')">🌧 Rainy Evening</button><button class="lm-option" data-lm="candle" onclick="lmSet('candle')">🕯 Candlelit Study</button></div>
+<div class="book3d-overlay" id="book3d-overlay" aria-hidden="true"><button class="book3d-skip" onclick="book3dFinish(true)">Skip</button><div class="book3d-stage"><div class="book3d-object" id="book3d-object"><div class="book3d-back"></div><div class="book3d-pageblock"></div><div class="book3d-pages"><div class="book3d-page"></div><div class="book3d-page"></div><div class="book3d-page"></div><div class="book3d-page"></div></div><div class="book3d-spine"></div><div class="book3d-front" id="book3d-front"></div></div><div class="book3d-caption" id="book3d-caption"></div></div></div>
+
+</body>
+</html>
